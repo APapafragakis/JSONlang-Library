@@ -36,12 +36,13 @@ This project is a lightweight library for creating, manipulating, and printing J
 ### 3. `main.cpp`
 - **Purpose**: Demonstrates the use of the JSON library through various examples, while testing it.
 
-## How to Use
-
-1. **Clone or Copy the Project**:
-   Copy all `.cpp` and `.h` files to your project directory.
-
 2. **Compile the Code**:
    Use the following command to compile:
    ```bash
-   g++ -o json_test main.cpp JSONlang.cpp
+   g++ -o json_test main.cpp JSONlang.cpp -std=c++17
+   ```
+
+3. **Run the Program**:
+   ```bash
+   ./json_test
+   

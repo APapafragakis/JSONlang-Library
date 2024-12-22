@@ -1,44 +1,42 @@
+// JSONlang.cpp
 #include "JSONlang.h"
 
-// JsonString
+// JsonString Implementation
 JsonString::JsonString(const std::string& val) : value(val) {}
 
 void JsonString::print() const {
     std::cout << "\"" << value << "\"";
 }
 
-// JsonNumber
+// JsonNumber Implementation
 JsonNumber::JsonNumber(double val) : value(val) {}
 
 void JsonNumber::print() const {
     std::cout << value;
 }
 
-// JsonBoolean
-JsonBoolean::JsonBoolean(bool val) : value(val) {}
-
-void JsonBoolean::print() const {
-    std::cout << (value ? "true" : "false");
-}
-
-// JsonNull
-void JsonNull::print() const {
-    std::cout << "null";
-}
-
-// JsonObject
+// JsonObject Implementation
 JsonObject::JsonObject() = default;
 
 JsonObject::JsonObject(std::initializer_list<std::pair<std::string, std::shared_ptr<JsonValue>>> init) : keyValues(init) {}
 
-void JsonObject::add(const std::string& key, std::shared_ptr<JsonValue> value) {
+void JsonObject::set(const std::string& key, std::shared_ptr<JsonValue> value) {
     for (auto& pair : keyValues) {
         if (pair.first == key) {
-            pair.second = value; // Replace the value if the key exists
+            pair.second = value;
             return;
         }
     }
-    keyValues.emplace_back(key, value); // Add a new key-value pair
+    keyValues.emplace_back(key, value);
+}
+
+std::shared_ptr<JsonValue>& JsonObject::get(const std::string& key) {
+    for (auto& pair : keyValues) {
+        if (pair.first == key) {
+            return pair.second;
+        }
+    }
+    throw std::runtime_error("Key not found: " + key);
 }
 
 void JsonObject::print() const {
@@ -51,12 +49,26 @@ void JsonObject::print() const {
     std::cout << "}";
 }
 
-// JsonArray
+// JsonArray Implementation
 JsonArray::JsonArray() = default;
 
 JsonArray::JsonArray(std::initializer_list<std::shared_ptr<JsonValue>> init) : values(init) {}
 
-void JsonArray::add(std::shared_ptr<JsonValue> value) {
+void JsonArray::set(size_t index, std::shared_ptr<JsonValue> value) {
+    if (index >= values.size()) {
+        values.resize(index + 1, nullptr);
+    }
+    values[index] = value;
+}
+
+std::shared_ptr<JsonValue>& JsonArray::get(size_t index) {
+    if (index >= values.size()) {
+        throw std::runtime_error("Index out of range");
+    }
+    return values[index];
+}
+
+void JsonArray::append(std::shared_ptr<JsonValue> value) {
     values.push_back(value);
 }
 
@@ -67,4 +79,45 @@ void JsonArray::print() const {
         values[i]->print();
     }
     std::cout << "]";
+}
+
+size_t JsonArray::size() const {
+    return values.size();
+}
+
+void JsonArray::resize(size_t newSize, std::shared_ptr<JsonValue> defaultValue) {
+    values.resize(newSize, defaultValue);
+}
+
+// JsonSetter Implementation
+JsonSetter::JsonSetter(std::shared_ptr<JsonValue>& target) : target(target) {}
+
+JsonSetter JsonSetter::operator[](const std::string& key) {
+    auto obj = std::dynamic_pointer_cast<JsonObject>(target);
+    if (!obj) {
+        target = std::make_shared<JsonObject>();
+        obj = std::dynamic_pointer_cast<JsonObject>(target);
+    }
+    try {
+        return JsonSetter(obj->get(key));
+    } catch (const std::runtime_error&) {
+        obj->set(key, std::make_shared<JsonString>("")); // Default empty value
+        return JsonSetter(obj->get(key));
+    }
+}
+
+JsonSetter JsonSetter::operator[](size_t index) {
+    auto arr = std::dynamic_pointer_cast<JsonArray>(target);
+    if (!arr) {
+        target = std::make_shared<JsonArray>();
+        arr = std::dynamic_pointer_cast<JsonArray>(target);
+    }
+    if (index >= arr->size()) {
+        arr->resize(index + 1, std::make_shared<JsonString>("")); // Default empty value
+    }
+    return JsonSetter(arr->get(index));
+}
+
+void JsonSetter::assign(std::shared_ptr<JsonValue> value) {
+    target = value;
 }
