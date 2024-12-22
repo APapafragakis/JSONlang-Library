@@ -77,5 +77,8 @@ public:
 #define NUMBER(value) std::make_shared<JsonNumber>(value)
 #define SET(target) JsonSetter(target)
 #define KEY(key) key
+#define ASSIGN(value) .assign(value)
+
+
 
 #endif // JSONLANG_H
