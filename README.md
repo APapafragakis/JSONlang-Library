@@ -34,43 +34,7 @@ This project is a lightweight library for creating, manipulating, and printing J
   - Provides logic for handling key-value pairs, arrays, and other JSON elements.
 
 ### 3. `main.cpp`
-- **Purpose**: Demonstrates the use of the JSON library through various examples.
-- **Examples**:
-  1. **Creating Empty JSON Object and Array**:
-     ```cpp
-     JSON(emptyObj) = OBJECT();
-     emptyObj->print(); // Outputs: {}
-     JSON(emptyArray) = ARRAY();
-     emptyArray->print(); // Outputs: []
-     ```
-
-  2. **Creating a Complex JSON Object**:
-     ```cpp
-     JSON(book) = OBJECT(
-         {KEY("title"), STRING("Gone Girl")},
-         {KEY("published"), NUMBER(2012)},
-         {KEY("type"), STRING("Thriller")},
-         {KEY("author"), OBJECT(
-             {KEY("firstname"), STRING("GILLIAN")},
-             {KEY("sirname"), STRING("FLYNN")},
-             {KEY("age"), NUMBER(45)}
-         )}
-     );
-     book->print(); 
-     // Outputs a structured JSON object.
-     ```
-
-  3. **Creating and Printing Arrays**:
-     ```cpp
-     JSON(week_temperatures) = ARRAY(
-         NUMBER(20), NUMBER(19.5), NUMBER(19), NUMBER(20),
-         NUMBER(19), NUMBER(18.5), NUMBER(19)
-     );
-     week_temperatures->print(); // Outputs: [20, 19.5, 19, 20, 19, 18.5, 19]
-     ```
-
-  4. **Nested JSON Structures**:
-     Demonstrates a `students` array containing objects, arrays, and key-value pairs.
+- **Purpose**: Demonstrates the use of the JSON library through various examples, while testing it.
 
 ## How to Use
 
