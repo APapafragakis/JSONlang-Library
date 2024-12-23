@@ -19,6 +19,10 @@ public:
     virtual void erase() {};                      // Clear all
     virtual void erase(const std::string& key) {}; // Remove by key (for objects)
     virtual void erase(size_t index) {};          // Remove by index (for arrays)
+    virtual bool operator==(const JsonValue& other) const = 0;  // Add this declaration
+    virtual bool operator!=(const JsonValue& other) const {
+        return !(*this == other);  // Default negation of equality
+    }
 
     virtual ~JsonValue() = default;
 };
@@ -29,6 +33,12 @@ public:
     explicit JsonBoolean(bool val);  // Constructor declaration
     void print() const override;     // print method declaration
     bool getValue() const;           // getValue method declaration
+
+    virtual bool operator==(const JsonValue& other) const override;
+
+    std::shared_ptr<JsonValue> operator&&(const JsonValue& other) const;
+    std::shared_ptr<JsonValue> operator||(const JsonValue& other) const;
+    std::shared_ptr<JsonValue> operator!() const;
 };
 
 // JsonString class
@@ -37,7 +47,7 @@ class JsonString : public JsonValue {
 public:
     explicit JsonString(const std::string& val);
     void print() const override;
-
+    virtual bool operator==(const JsonValue& other) const override;
     // Add this getter method
     const std::string& getValue() const { return value; }
 };
@@ -53,6 +63,7 @@ public:
     // Getter for value
     double getValue() const { return value; }
 
+    virtual bool operator==(const JsonValue& other) const override;
     // Overload arithmetic operators for JsonNumber
     std::shared_ptr<JsonValue> operator+(const JsonValue& other) const;
     std::shared_ptr<JsonValue> operator-(const JsonValue& other) const;
@@ -74,11 +85,12 @@ public:
     JsonObject();
     JsonObject(std::initializer_list<std::pair<std::string, std::shared_ptr<JsonValue>>> init);
     void set(const std::string& key, std::shared_ptr<JsonValue> value);
-    std::shared_ptr<JsonValue>& get(const std::string& key);
+    const std::shared_ptr<JsonValue>& get(const std::string& key) const;
     void erase(const std::string& key) override;
     void erase() override;
     void print() const override;
-    std::vector<std::pair<std::string, std::shared_ptr<JsonValue>>>& getKeyValues() { return keyValues; }  // Getter for keyValues
+    virtual bool operator==(const JsonValue& other) const override;
+    const std::vector<std::pair<std::string, std::shared_ptr<JsonValue>>>& getKeyValues() const { return keyValues; }  // Add const qualifier
 };
 
 // JsonArray class
@@ -91,9 +103,10 @@ public:
     void erase(size_t index) override;
     void erase() override;
     void print() const override;
+    virtual bool operator==(const JsonValue& other) const override;
 
     size_t size() const;
-    std::vector<std::shared_ptr<JsonValue>>& getValues() { return values; }  // Getter for values
+    const std::vector<std::shared_ptr<JsonValue>>& getValues() const { return values; }  // Add const qualifier
 };
 
 // Helper functions for ERASE
@@ -116,6 +129,11 @@ void ERASE(std::shared_ptr<JsonValue> target, const std::string& firstKey, Args.
     }
 }
 
+inline std::ostream& operator<<(std::ostream& os, const std::shared_ptr<JsonValue>& jsonValue) {
+    jsonValue->print();  // Call the print function of the stored JsonValue
+    return os;
+}
+
 // Macros for JSON syntax
 #define JSON(name) std::shared_ptr<JsonValue> name
 #define OBJECT(...) std::make_shared<JsonObject>(std::initializer_list<std::pair<std::string, std::shared_ptr<JsonValue>>>{__VA_ARGS__})
@@ -123,6 +141,8 @@ void ERASE(std::shared_ptr<JsonValue> target, const std::string& firstKey, Args.
 #define STRING(value) std::make_shared<JsonString>(value)
 #define NUMBER(value) std::make_shared<JsonNumber>(value)
 #define KEY(key) key
+#define BOOLEAN(value) std::make_shared<JsonBoolean>(value)
+
 
 // Operators for shared_ptr<JsonValue>
 std::shared_ptr<JsonValue> operator+(const std::shared_ptr<JsonValue>& lhs, const std::shared_ptr<JsonValue>& rhs);
@@ -134,5 +154,8 @@ std::shared_ptr<JsonValue> operator>(const std::shared_ptr<JsonValue>& lhs, cons
 std::shared_ptr<JsonValue> operator<(const std::shared_ptr<JsonValue>& lhs, const std::shared_ptr<JsonValue>& rhs);
 std::shared_ptr<JsonValue> operator>=(const std::shared_ptr<JsonValue>& lhs, const std::shared_ptr<JsonValue>& rhs);
 std::shared_ptr<JsonValue> operator<=(const std::shared_ptr<JsonValue>& lhs, const std::shared_ptr<JsonValue>& rhs);
+std::shared_ptr<JsonValue> operator==(const std::shared_ptr<JsonValue>& lhs, const std::shared_ptr<JsonValue>& rhs);
+std::shared_ptr<JsonValue> operator!=(const std::shared_ptr<JsonValue>& lhs, const std::shared_ptr<JsonValue>& rhs);
+
 
 #endif // JSONLANG_H
