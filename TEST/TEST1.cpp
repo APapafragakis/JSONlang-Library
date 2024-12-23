@@ -1,14 +1,23 @@
-#include <iostream>  // Ensure this is included for std::cout
 #include "JSONlang.h"
 
 int main() {
-    // Define an empty object
-    JSON(emptyObj) = OBJECT();
 
-    // Define an empty array
+    // Orismos enos keno antikeimenou
+    JSON(emptyObj) = OBJECT();
+    // Orismos enos keno pinaka
     JSON(emptyArray) = ARRAY();
 
-    // Define a book object with nested objects and arrays
+    // Orismos enos arithmou
+    JSON(someNumber) = NUMBER(42);
+
+    // Orismos timon true kai false
+    JSON(isTrue) = TRUE;
+    JSON(isFalse) = FALSE;
+
+    // Orismos mias null timis
+    JSON(nothing) = null;
+
+    // Orismos enos vivliou me enthesa antikeimena kai pinakes
     JSON(book) = OBJECT(
         {KEY("title"), STRING("Gone Girl")},
         {KEY("published"), NUMBER(2012)},
@@ -29,13 +38,13 @@ int main() {
         )}
     );
 
-    // Define an array of temperatures for a week
+    // Orismos pinaka thermokrasion gia mia evdomada
     JSON(week_temperatures) = ARRAY(
         NUMBER(20), NUMBER(19.5), NUMBER(19), NUMBER(20),
         NUMBER(19), NUMBER(18.5), NUMBER(19)
     );
 
-    // Define a complex object with nested objects and arrays for students
+    // Orismos enos poliplokou antikeimenou me enthesa antikeimena kai pinakes gia mathites
     JSON(students) = ARRAY(
         OBJECT(
             {KEY("name"), STRING("Nikos Nikolaou")},
@@ -75,9 +84,13 @@ int main() {
         )
     );
 
-    // Print all the JSON objects
+    // Ektypwsi olwn twn JSON antikeimenwn
     std::cout << "Empty Object: " << emptyObj << std::endl;
     std::cout << "Empty Array: " << emptyArray << std::endl;
+    std::cout << "Some Number: " << someNumber << std::endl;
+    std::cout << "True Value: " << isTrue << std::endl;
+    std::cout << "False Value: " << isFalse << std::endl;
+    std::cout << "Null Value: " << nothing << std::endl;
     std::cout << "Book: " << book << std::endl;
     std::cout << "Week Temperatures: " << week_temperatures << std::endl;
     std::cout << "Students: " << students << std::endl;
