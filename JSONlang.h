@@ -23,6 +23,14 @@ public:
     virtual ~JsonValue() = default;
 };
 
+class JsonBoolean : public JsonValue {
+    bool value;
+public:
+    explicit JsonBoolean(bool val);  // Constructor declaration
+    void print() const override;     // print method declaration
+    bool getValue() const;           // getValue method declaration
+};
+
 // JsonString class
 class JsonString : public JsonValue {
     std::string value;
@@ -50,6 +58,7 @@ public:
     std::shared_ptr<JsonValue> operator-(const JsonValue& other) const;
     std::shared_ptr<JsonValue> operator*(const JsonValue& other) const;
     std::shared_ptr<JsonValue> operator/(const JsonValue& other) const;
+    std::shared_ptr<JsonValue> operator%(const JsonValue& other) const;
 
     // Overload relational operators for JsonNumber
     bool operator>(const JsonValue& other) const;
@@ -120,5 +129,10 @@ std::shared_ptr<JsonValue> operator+(const std::shared_ptr<JsonValue>& lhs, cons
 std::shared_ptr<JsonValue> operator-(const std::shared_ptr<JsonValue>& lhs, const std::shared_ptr<JsonValue>& rhs);
 std::shared_ptr<JsonValue> operator*(const std::shared_ptr<JsonValue>& lhs, const std::shared_ptr<JsonValue>& rhs);
 std::shared_ptr<JsonValue> operator/(const std::shared_ptr<JsonValue>& lhs, const std::shared_ptr<JsonValue>& rhs);
+std::shared_ptr<JsonValue> operator%(const std::shared_ptr<JsonValue>& lhs, const std::shared_ptr<JsonValue>& rhs); // Added %
+std::shared_ptr<JsonValue> operator>(const std::shared_ptr<JsonValue>& lhs, const std::shared_ptr<JsonValue>& rhs);
+std::shared_ptr<JsonValue> operator<(const std::shared_ptr<JsonValue>& lhs, const std::shared_ptr<JsonValue>& rhs);
+std::shared_ptr<JsonValue> operator>=(const std::shared_ptr<JsonValue>& lhs, const std::shared_ptr<JsonValue>& rhs);
+std::shared_ptr<JsonValue> operator<=(const std::shared_ptr<JsonValue>& lhs, const std::shared_ptr<JsonValue>& rhs);
 
 #endif // JSONLANG_H

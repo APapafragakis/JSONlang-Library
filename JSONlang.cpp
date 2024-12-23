@@ -1,5 +1,15 @@
 #include "JSONlang.h"
 
+JsonBoolean::JsonBoolean(bool val) : value(val) {}
+
+void JsonBoolean::print() const {
+    std::cout << (value ? "true" : "false");
+}
+
+bool JsonBoolean::getValue() const {
+    return value;
+}
+
 // JsonString Implementation
 JsonString::JsonString(const std::string& val) : value(val) {}
 
@@ -79,6 +89,61 @@ std::shared_ptr<JsonValue> operator*(const std::shared_ptr<JsonValue>& lhs, cons
         return std::make_shared<JsonNumber>(num_lhs->getValue() * num_rhs->getValue());
     }
     throw std::runtime_error("Both operands must be JsonNumber.");
+}
+
+std::shared_ptr<JsonValue> operator%(const std::shared_ptr<JsonValue>& lhs, const std::shared_ptr<JsonValue>& rhs) {
+    auto num_lhs = std::dynamic_pointer_cast<JsonNumber>(lhs);
+    auto num_rhs = std::dynamic_pointer_cast<JsonNumber>(rhs);
+    if (num_lhs && num_rhs) {
+        if (static_cast<int>(num_lhs->getValue()) != num_lhs->getValue() || 
+            static_cast<int>(num_rhs->getValue()) != num_rhs->getValue()) {
+            throw std::runtime_error("Modulus operator requires integer values.");
+        }
+        return std::make_shared<JsonNumber>(static_cast<int>(num_lhs->getValue()) % static_cast<int>(num_rhs->getValue()));
+    }
+    throw std::runtime_error("Both operands must be JsonNumber.");
+}
+
+#include "JSONlang.h"
+
+// Greater than operator '>'
+std::shared_ptr<JsonValue> operator>(const std::shared_ptr<JsonValue>& lhs, const std::shared_ptr<JsonValue>& rhs) {
+    auto num_lhs = std::dynamic_pointer_cast<JsonNumber>(lhs);
+    auto num_rhs = std::dynamic_pointer_cast<JsonNumber>(rhs);
+    if (num_lhs && num_rhs) {
+        return std::make_shared<JsonBoolean>(num_lhs->getValue() > num_rhs->getValue());
+    }
+    throw std::runtime_error("Both operands must be JsonNumber for comparison.");
+}
+
+// Less than operator '<'
+std::shared_ptr<JsonValue> operator<(const std::shared_ptr<JsonValue>& lhs, const std::shared_ptr<JsonValue>& rhs) {
+    auto num_lhs = std::dynamic_pointer_cast<JsonNumber>(lhs);
+    auto num_rhs = std::dynamic_pointer_cast<JsonNumber>(rhs);
+    if (num_lhs && num_rhs) {
+        return std::make_shared<JsonBoolean>(num_lhs->getValue() < num_rhs->getValue());
+    }
+    throw std::runtime_error("Both operands must be JsonNumber for comparison.");
+}
+
+// Greater than or equal to operator '>='
+std::shared_ptr<JsonValue> operator>=(const std::shared_ptr<JsonValue>& lhs, const std::shared_ptr<JsonValue>& rhs) {
+    auto num_lhs = std::dynamic_pointer_cast<JsonNumber>(lhs);
+    auto num_rhs = std::dynamic_pointer_cast<JsonNumber>(rhs);
+    if (num_lhs && num_rhs) {
+        return std::make_shared<JsonBoolean>(num_lhs->getValue() >= num_rhs->getValue());
+    }
+    throw std::runtime_error("Both operands must be JsonNumber for comparison.");
+}
+
+// Less than or equal to operator '<='
+std::shared_ptr<JsonValue> operator<=(const std::shared_ptr<JsonValue>& lhs, const std::shared_ptr<JsonValue>& rhs) {
+    auto num_lhs = std::dynamic_pointer_cast<JsonNumber>(lhs);
+    auto num_rhs = std::dynamic_pointer_cast<JsonNumber>(rhs);
+    if (num_lhs && num_rhs) {
+        return std::make_shared<JsonBoolean>(num_lhs->getValue() <= num_rhs->getValue());
+    }
+    throw std::runtime_error("Both operands must be JsonNumber for comparison.");
 }
 
 std::shared_ptr<JsonValue> operator/(const std::shared_ptr<JsonValue>& lhs, const std::shared_ptr<JsonValue>& rhs) {
