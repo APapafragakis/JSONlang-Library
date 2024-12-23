@@ -9,6 +9,9 @@
 #include <initializer_list>
 #include <algorithm>
 
+// Forward declaration
+class JsonNumber;
+
 // Base class for all JSON values
 class JsonValue {
 public:
@@ -16,10 +19,11 @@ public:
     virtual void erase() {};                      // Clear all
     virtual void erase(const std::string& key) {}; // Remove by key (for objects)
     virtual void erase(size_t index) {};          // Remove by index (for arrays)
+
     virtual ~JsonValue() = default;
 };
 
-// JsonString
+// JsonString class
 class JsonString : public JsonValue {
     std::string value;
 public:
@@ -27,15 +31,30 @@ public:
     void print() const override;
 };
 
-// JsonNumber
+// JsonNumber class
 class JsonNumber : public JsonValue {
     double value;
 public:
     explicit JsonNumber(double val);
     void print() const override;
+
+    // Getter for value
+    double getValue() const { return value; }
+
+    // Overload arithmetic operators for JsonNumber
+    std::shared_ptr<JsonValue> operator+(const JsonValue& other) const;
+    std::shared_ptr<JsonValue> operator-(const JsonValue& other) const;
+    std::shared_ptr<JsonValue> operator*(const JsonValue& other) const;
+    std::shared_ptr<JsonValue> operator/(const JsonValue& other) const;
+
+    // Overload relational operators for JsonNumber
+    bool operator>(const JsonValue& other) const;
+    bool operator<(const JsonValue& other) const;
+    bool operator>=(const JsonValue& other) const;
+    bool operator<=(const JsonValue& other) const;
 };
 
-// JsonObject
+// JsonObject class
 class JsonObject : public JsonValue {
     std::vector<std::pair<std::string, std::shared_ptr<JsonValue>>> keyValues;
 public:
@@ -48,7 +67,7 @@ public:
     void print() const override;
 };
 
-// JsonArray
+// JsonArray class
 class JsonArray : public JsonValue {
     std::vector<std::shared_ptr<JsonValue>> values;
 public:
@@ -89,5 +108,11 @@ void ERASE(std::shared_ptr<JsonValue> target, const std::string& firstKey, Args.
 #define STRING(value) std::make_shared<JsonString>(value)
 #define NUMBER(value) std::make_shared<JsonNumber>(value)
 #define KEY(key) key
+
+// Operators for shared_ptr<JsonValue>
+std::shared_ptr<JsonValue> operator+(const std::shared_ptr<JsonValue>& lhs, const std::shared_ptr<JsonValue>& rhs);
+std::shared_ptr<JsonValue> operator-(const std::shared_ptr<JsonValue>& lhs, const std::shared_ptr<JsonValue>& rhs);
+std::shared_ptr<JsonValue> operator*(const std::shared_ptr<JsonValue>& lhs, const std::shared_ptr<JsonValue>& rhs);
+std::shared_ptr<JsonValue> operator/(const std::shared_ptr<JsonValue>& lhs, const std::shared_ptr<JsonValue>& rhs);
 
 #endif // JSONLANG_H

@@ -14,6 +14,46 @@ void JsonNumber::print() const {
     std::cout << value;
 }
 
+// Overload arithmetic operators for JsonNumber
+std::shared_ptr<JsonValue> operator+(const std::shared_ptr<JsonValue>& lhs, const std::shared_ptr<JsonValue>& rhs) {
+    auto num_lhs = std::dynamic_pointer_cast<JsonNumber>(lhs);
+    auto num_rhs = std::dynamic_pointer_cast<JsonNumber>(rhs);
+    if (num_lhs && num_rhs) {
+        return std::make_shared<JsonNumber>(num_lhs->getValue() + num_rhs->getValue());
+    }
+    throw std::runtime_error("Both operands must be JsonNumber.");
+}
+
+std::shared_ptr<JsonValue> operator-(const std::shared_ptr<JsonValue>& lhs, const std::shared_ptr<JsonValue>& rhs) {
+    auto num_lhs = std::dynamic_pointer_cast<JsonNumber>(lhs);
+    auto num_rhs = std::dynamic_pointer_cast<JsonNumber>(rhs);
+    if (num_lhs && num_rhs) {
+        return std::make_shared<JsonNumber>(num_lhs->getValue() - num_rhs->getValue());
+    }
+    throw std::runtime_error("Both operands must be JsonNumber.");
+}
+
+std::shared_ptr<JsonValue> operator*(const std::shared_ptr<JsonValue>& lhs, const std::shared_ptr<JsonValue>& rhs) {
+    auto num_lhs = std::dynamic_pointer_cast<JsonNumber>(lhs);
+    auto num_rhs = std::dynamic_pointer_cast<JsonNumber>(rhs);
+    if (num_lhs && num_rhs) {
+        return std::make_shared<JsonNumber>(num_lhs->getValue() * num_rhs->getValue());
+    }
+    throw std::runtime_error("Both operands must be JsonNumber.");
+}
+
+std::shared_ptr<JsonValue> operator/(const std::shared_ptr<JsonValue>& lhs, const std::shared_ptr<JsonValue>& rhs) {
+    auto num_lhs = std::dynamic_pointer_cast<JsonNumber>(lhs);
+    auto num_rhs = std::dynamic_pointer_cast<JsonNumber>(rhs);
+    if (num_lhs && num_rhs) {
+        if (num_rhs->getValue() == 0) {
+            throw std::runtime_error("Division by zero.");
+        }
+        return std::make_shared<JsonNumber>(num_lhs->getValue() / num_rhs->getValue());
+    }
+    throw std::runtime_error("Both operands must be JsonNumber.");
+}
+
 // JsonObject Implementation
 JsonObject::JsonObject() = default;
 
