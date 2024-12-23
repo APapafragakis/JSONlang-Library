@@ -9,8 +9,8 @@
 #include <initializer_list>
 #include <algorithm>
 
-// Forward declaration
-class JsonNumber;
+class JsonValue; 
+
 
 // Base class for all JSON values
 class JsonValue {
@@ -141,12 +141,6 @@ void ERASE(std::shared_ptr<JsonValue> target, const std::string& firstKey, Args.
     }
 }
 
-void printJsonExpressions(); // Base case for recursion
-
-template <typename T, typename... Args>
-void printJsonExpressions(T first, Args... rest);
-
-
 inline std::ostream& operator<<(std::ostream& os, const std::shared_ptr<JsonValue>& jsonValue) {
     jsonValue->print();  // Call the print function of the stored JsonValue
     return os;
@@ -164,7 +158,8 @@ inline std::ostream& operator<<(std::ostream& os, const std::shared_ptr<JsonValu
 #define IS_EMPTY(json_value) (json_value->isEmpty())
 #define HAS_KEY(json_value, key) (json_value->hasKey(key))
 #define TYPE_OF(json_value) (json_value->typeOf())
-#define PRINT(...) printJsonExpressions(__VA_ARGS__)
+
+
 
 // Operators for shared_ptr<JsonValue>
 std::shared_ptr<JsonValue> operator+(const std::shared_ptr<JsonValue>& lhs, const std::shared_ptr<JsonValue>& rhs);

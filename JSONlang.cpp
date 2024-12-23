@@ -225,6 +225,7 @@ bool JsonObject::operator==(const JsonValue& other) const {
     return false;
 }
 
+
 // JsonObject Implementation
 JsonObject::JsonObject() = default;
 
@@ -248,6 +249,7 @@ const std::shared_ptr<JsonValue>& JsonObject::get(const std::string& key) const 
     }
     throw std::runtime_error("Key not found: " + key);
 }
+
 
 void JsonObject::erase(const std::string& key) {
     auto it = std::remove_if(keyValues.begin(), keyValues.end(),
@@ -362,32 +364,6 @@ std::string JsonObject::typeOf() const {
 
 std::string JsonArray::typeOf() const {
     return "array";
-}
-
-void printJsonExpressions() {
-    std::cout << std::endl; // End line after printing all expressions
-}
-
-template <typename T, typename... Args>
-void printJsonExpressions(T first, Args... rest) {
-    if constexpr (std::is_same_v<T, std::shared_ptr<JsonValue>>) {
-        if (first) {
-            first->print();
-        } else {
-            std::cout << "null";
-        }
-    } else if constexpr (std::is_same_v<T, bool>) {
-        std::cout << (first ? "true" : "false");
-    } else {
-        std::cout << first;
-    }
-
-    if constexpr (sizeof...(rest) > 0) {
-        std::cout << ", ";
-        printJsonExpressions(rest...); // Recur with remaining arguments
-    } else {
-        std::cout << std::endl; // End the line after the last argument
-    }
 }
 
 // ERASE Implementation
