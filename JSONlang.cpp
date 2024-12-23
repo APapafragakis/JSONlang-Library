@@ -14,15 +14,28 @@ void JsonNumber::print() const {
     std::cout << value;
 }
 
-// Overload arithmetic operators for JsonNumber
+
+// JsonString Implementation
 std::shared_ptr<JsonValue> operator+(const std::shared_ptr<JsonValue>& lhs, const std::shared_ptr<JsonValue>& rhs) {
+    // Handle JsonNumber addition
     auto num_lhs = std::dynamic_pointer_cast<JsonNumber>(lhs);
     auto num_rhs = std::dynamic_pointer_cast<JsonNumber>(rhs);
     if (num_lhs && num_rhs) {
         return std::make_shared<JsonNumber>(num_lhs->getValue() + num_rhs->getValue());
     }
-    throw std::runtime_error("Both operands must be JsonNumber.");
+
+    // Handle JsonString concatenation
+    auto str_lhs = std::dynamic_pointer_cast<JsonString>(lhs);
+    auto str_rhs = std::dynamic_pointer_cast<JsonString>(rhs);
+    if (str_lhs && str_rhs) {
+        return std::make_shared<JsonString>(str_lhs->getValue() + str_rhs->getValue());
+    }
+
+    // If types don't match, throw an error
+    throw std::runtime_error("Unsupported types for operator+");
 }
+
+
 
 std::shared_ptr<JsonValue> operator-(const std::shared_ptr<JsonValue>& lhs, const std::shared_ptr<JsonValue>& rhs) {
     auto num_lhs = std::dynamic_pointer_cast<JsonNumber>(lhs);

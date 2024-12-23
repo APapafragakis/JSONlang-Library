@@ -29,7 +29,11 @@ class JsonString : public JsonValue {
 public:
     explicit JsonString(const std::string& val);
     void print() const override;
+
+    // Add this getter method
+    const std::string& getValue() const { return value; }
 };
+
 
 // JsonNumber class
 class JsonNumber : public JsonValue {
@@ -65,6 +69,7 @@ public:
     void erase(const std::string& key) override;
     void erase() override;
     void print() const override;
+    std::vector<std::pair<std::string, std::shared_ptr<JsonValue>>>& getKeyValues() { return keyValues; }  // Getter for keyValues
 };
 
 // JsonArray class
@@ -79,6 +84,7 @@ public:
     void print() const override;
 
     size_t size() const;
+    std::vector<std::shared_ptr<JsonValue>>& getValues() { return values; }  // Getter for values
 };
 
 // Helper functions for ERASE
