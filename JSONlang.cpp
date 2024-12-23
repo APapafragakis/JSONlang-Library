@@ -38,6 +38,20 @@ std::shared_ptr<JsonValue>& JsonObject::get(const std::string& key) {
     throw std::runtime_error("Key not found: " + key);
 }
 
+void JsonObject::erase(const std::string& key) {
+    auto it = std::remove_if(keyValues.begin(), keyValues.end(),
+        [&key](const std::pair<std::string, std::shared_ptr<JsonValue>>& pair) {
+            return pair.first == key;
+        });
+    if (it != keyValues.end()) {
+        keyValues.erase(it, keyValues.end());
+    }
+}
+
+void JsonObject::erase() {
+    keyValues.clear();
+}
+
 void JsonObject::print() const {
     std::cout << "{";
     for (size_t i = 0; i < keyValues.size(); ++i) {
@@ -53,22 +67,20 @@ JsonArray::JsonArray() = default;
 
 JsonArray::JsonArray(std::initializer_list<std::shared_ptr<JsonValue>> init) : values(init) {}
 
-void JsonArray::set(size_t index, std::shared_ptr<JsonValue> value) {
-    if (index >= values.size()) {
-        values.resize(index + 1, nullptr);
-    }
-    values[index] = value;
-}
-
-std::shared_ptr<JsonValue>& JsonArray::get(size_t index) {
-    if (index >= values.size()) {
-        throw std::runtime_error("Index out of range");
-    }
-    return values[index];
-}
-
 void JsonArray::append(std::shared_ptr<JsonValue> value) {
     values.push_back(value);
+}
+
+void JsonArray::erase(size_t index) {
+    if (index < values.size()) {
+        values.erase(values.begin() + index);
+    } else {
+        throw std::runtime_error("Index out of range for erase operation.");
+    }
+}
+
+void JsonArray::erase() {
+    values.clear();
 }
 
 void JsonArray::print() const {
@@ -84,49 +96,15 @@ size_t JsonArray::size() const {
     return values.size();
 }
 
-void JsonArray::resize(size_t newSize, std::shared_ptr<JsonValue> defaultValue) {
-    values.resize(newSize, defaultValue);
+// ERASE Implementation
+void ERASE(std::shared_ptr<JsonValue> target) {
+    target->erase();
 }
 
-// JsonSetter Implementation
-JsonSetter::JsonSetter(std::shared_ptr<JsonValue>& target) : target(target) {}
-
-JsonSetter JsonSetter::operator[](const std::string& key) {
+void ERASE(std::shared_ptr<JsonValue> target, const std::string& key) {
     auto obj = std::dynamic_pointer_cast<JsonObject>(target);
     if (!obj) {
-        target = std::make_shared<JsonObject>();
-        obj = std::dynamic_pointer_cast<JsonObject>(target);
+        throw std::runtime_error("Target is not a JSON object.");
     }
-    try {
-        return JsonSetter(obj->get(key));
-    } catch (const std::runtime_error&) {
-        obj->set(key, std::make_shared<JsonString>("")); // Default empty value
-        return JsonSetter(obj->get(key));
-    }
-}
-
-JsonSetter JsonSetter::operator[](size_t index) {
-    auto arr = std::dynamic_pointer_cast<JsonArray>(target);
-    if (!arr) {
-        target = std::make_shared<JsonArray>();
-        arr = std::dynamic_pointer_cast<JsonArray>(target);
-    }
-    if (index >= arr->size()) {
-        arr->resize(index + 1, std::make_shared<JsonString>("")); // Default empty value
-    }
-    return JsonSetter(arr->get(index));
-}
-
-void JsonSetter::assign(std::shared_ptr<JsonValue> value) {
-    target = value;
-}
-
-void JsonSetter::append(std::initializer_list<std::shared_ptr<JsonValue>> values) {
-    auto arr = std::dynamic_pointer_cast<JsonArray>(target);
-    if (!arr) {
-        throw std::runtime_error("Target is not a JSON array; cannot append values.");
-    }
-    for (auto& value : values) {
-        arr->append(value);
-    }
+    obj->erase(key);
 }

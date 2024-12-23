@@ -2,63 +2,38 @@
 #include "JSONlang.h"
 
 int main() {
-    // Define a JSON array
-    JSON(week_temperatures) = ARRAY(NUMBER(20), NUMBER(19.5), NUMBER(19));
-
-    // Change the 3rd day's temperature
-    SET(week_temperatures)[2] ASSIGN(NUMBER(22));
-
-    // Append a new temperature to the array
-    SET(week_temperatures)[3] ASSIGN(NUMBER(21.5));
-
-    // Append multiple temperatures to the array
-    SET(week_temperatures) APPEND(NUMBER(23), NUMBER(22), NUMBER(20));
-
-    // Print the updated week_temperatures array
-    std::cout << "Updated Week Temperatures: ";
-    week_temperatures->print();
-    std::cout << std::endl;
-
     // Define a JSON object
-    JSON(student) = OBJECT(
-        {KEY("name"), STRING("Alex")},
-        {KEY("id"), NUMBER(1234)}
+    JSON(book) = OBJECT(
+        {KEY("title"), STRING("C++")},
+        {KEY("author"), OBJECT(
+            {KEY("name"), STRING("Bjarne")},
+            {KEY("age"), NUMBER(70)}
+        )},
+        {KEY("type"), STRING("Programming")}
     );
 
-    // Add a new key-value pair
-    SET(student)["email"] ASSIGN(STRING("alex@example.com"));
+    // Print the original JSON object
+    std::cout << "Original JSON object:\n";
+    book->print();
+    std::cout << "\n\n";
 
-    // Update an existing key's value
-    SET(student)["name"] ASSIGN(STRING("Alexandros"));
+    // Test 1: Remove nested key "author.age"
+    ERASE(book, "author", "age"); // Removes the "age" key from the "author" object
+    std::cout << "After ERASE(book, \"author\", \"age\"):\n";
+    book->print();
+    std::cout << "\n\n";
 
-    // Print the updated student object
-    std::cout << "Updated Student: ";
-    student->print();
-    std::cout << std::endl;
+    // Test 2: Remove top-level key "type"
+    ERASE(book, "type"); // Removes the "type" key
+    std::cout << "After ERASE(book, \"type\"):\n";
+    book->print();
+    std::cout << "\n\n";
 
-    // Define a nested JSON structure
-    JSON(students) = ARRAY(
-        OBJECT({KEY("name"), STRING("Nikos")}, {KEY("grade"), NUMBER(8.5)}),
-        OBJECT({KEY("name"), STRING("Maria")}, {KEY("grade"), NUMBER(9.0)})
-    );
-
-    // Modify a nested object's key
-    SET(students)[1]["grade"] ASSIGN(NUMBER(9.5));
-
-    // Add a new key-value pair to the first student
-    SET(students)[0]["email"] ASSIGN(STRING("nikos@example.com"));
-
-    // Append grades to a student's grades array
-    SET(students)[0]["grades"] ASSIGN(ARRAY()); // Create grades array
-    SET(students)[0]["grades"] APPEND(
-        OBJECT({KEY("hy255"), NUMBER(9)}),
-        OBJECT({KEY("hy200"), NUMBER(8)})
-    );
-
-    // Print the updated students array
-    std::cout << "Updated Students: ";
-    students->print();
-    std::cout << std::endl;
+    // Test 3: Clear the entire object
+    ERASE(book); // Clears all data in the "book" object
+    std::cout << "After ERASE(book):\n";
+    book->print();
+    std::cout << "\n";
 
     return 0;
 }
