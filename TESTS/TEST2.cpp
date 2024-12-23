@@ -61,5 +61,35 @@ int main() {
     students->print();
     std::cout << std::endl;
 
+    // Orismos enos JSON antikeimenou vivliou
+    JSON(book) = OBJECT(
+        {KEY("title"), STRING("Gone Girl")},
+        {KEY("type"), STRING("Thriller")},
+        {KEY("author"), OBJECT(
+            {KEY("firstname"), STRING("GILLIAN")},
+            {KEY("sirname"), STRING("FLYNN")},
+            {KEY("age"), NUMBER(45)}
+        )}
+    );
+
+    // Ektypwsi arxikou vivliou
+    std::cout << "Original Book: ";
+    book->print();
+    std::cout << std::endl;
+
+    // Diagrafi kleidiou "age" apo to antikeimeno "author" tou vivliou
+    ERASE(book,"author","age");
+
+    // Diagrafi tou kleidiou "type" apo to vivlio
+    ERASE(book,"type");
+
+    // Diagrafi olwn ton dedomenon tou vivliou
+    ERASE(book);
+
+    // Ektypwsi tou vivliou meta tis diagrafes
+    std::cout << "Book after ERASE operations: ";
+    book->print(); // Tha prepei na emfanistei adio antikeimeno
+    std::cout << std::endl;
+
     return 0;
 }
