@@ -1,4 +1,3 @@
-// JSONlang.cpp
 #include "JSONlang.h"
 
 // JsonString Implementation
@@ -120,4 +119,14 @@ JsonSetter JsonSetter::operator[](size_t index) {
 
 void JsonSetter::assign(std::shared_ptr<JsonValue> value) {
     target = value;
+}
+
+void JsonSetter::append(std::initializer_list<std::shared_ptr<JsonValue>> values) {
+    auto arr = std::dynamic_pointer_cast<JsonArray>(target);
+    if (!arr) {
+        throw std::runtime_error("Target is not a JSON array; cannot append values.");
+    }
+    for (auto& value : values) {
+        arr->append(value);
+    }
 }

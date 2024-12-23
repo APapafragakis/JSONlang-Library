@@ -1,4 +1,3 @@
-// JSONlang.h
 #ifndef JSONLANG_H
 #define JSONLANG_H
 
@@ -54,9 +53,8 @@ public:
     void append(std::shared_ptr<JsonValue> value);
     void print() const override;
 
-    // Accessor for JsonSetter
-    size_t size() const;  // Get the size of the array
-    void resize(size_t newSize, std::shared_ptr<JsonValue> defaultValue); // Resize array
+    size_t size() const;
+    void resize(size_t newSize, std::shared_ptr<JsonValue> defaultValue);
 };
 
 // Helper class for editing JSON values
@@ -67,6 +65,7 @@ public:
     JsonSetter operator[](const std::string& key);
     JsonSetter operator[](size_t index);
     void assign(std::shared_ptr<JsonValue> value);
+    void append(std::initializer_list<std::shared_ptr<JsonValue>> values);
 };
 
 // Macros for JSON syntax
@@ -78,7 +77,6 @@ public:
 #define SET(target) JsonSetter(target)
 #define KEY(key) key
 #define ASSIGN(value) .assign(value)
-
-
+#define APPEND(...) .append({__VA_ARGS__})
 
 #endif // JSONLANG_H
