@@ -307,6 +307,89 @@ size_t JsonArray::size() const {
     return values.size();
 }
 
+size_t JsonValue::size() const {
+    return 1; // Default size for single-value JSON types
+}
+
+size_t JsonObject::size() const {
+    return keyValues.size(); // Return the number of key-value pairs
+}
+
+bool JsonValue::isEmpty() const {
+    return false; // Non-array and non-object types are never empty
+}
+
+bool JsonObject::isEmpty() const {
+    return keyValues.empty() ? true : false;
+}
+
+bool JsonArray::isEmpty() const {
+    return values.empty() ? true : false;
+}
+
+bool JsonValue::hasKey(const std::string& key) const {
+    return false; // Non-object types do not have keys
+}
+
+bool JsonObject::hasKey(const std::string& key) const {
+    for (const auto& pair : keyValues) {
+        if (pair.first == key) {
+            return true;
+        }
+    }
+    return false;
+}
+
+std::string JsonValue::typeOf() const {
+    return "null"; // Default type for null or unsupported types
+}
+
+std::string JsonBoolean::typeOf() const {
+    return "boolean";
+}
+
+std::string JsonString::typeOf() const {
+    return "string";
+}
+
+std::string JsonNumber::typeOf() const {
+    return "number";
+}
+
+std::string JsonObject::typeOf() const {
+    return "object";
+}
+
+std::string JsonArray::typeOf() const {
+    return "array";
+}
+
+void printJsonExpressions() {
+    std::cout << std::endl; // End line after printing all expressions
+}
+
+template <typename T, typename... Args>
+void printJsonExpressions(T first, Args... rest) {
+    if constexpr (std::is_same_v<T, std::shared_ptr<JsonValue>>) {
+        if (first) {
+            first->print();
+        } else {
+            std::cout << "null";
+        }
+    } else if constexpr (std::is_same_v<T, bool>) {
+        std::cout << (first ? "true" : "false");
+    } else {
+        std::cout << first;
+    }
+
+    if constexpr (sizeof...(rest) > 0) {
+        std::cout << ", ";
+        printJsonExpressions(rest...); // Recur with remaining arguments
+    } else {
+        std::cout << std::endl; // End the line after the last argument
+    }
+}
+
 // ERASE Implementation
 void ERASE(std::shared_ptr<JsonValue> target) {
     target->erase();

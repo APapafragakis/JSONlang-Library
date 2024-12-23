@@ -105,5 +105,55 @@ int main() {
     std::cout << "obj1_2 == obj2_2: " << (*obj1_2 == *obj2_2 ? "true" : "false") << std::endl;  // Expected output: true
     std::cout << "obj1_2 != obj3_2: " << (*obj1_2 != *obj3_2 ? "true" : "false") << std::endl;  // Expected output: true
 
+    // Define a simple JSON object for the exam and project grades
+    JSON(hy352_nik) = OBJECT(
+        {KEY("exam"), NUMBER(7)},
+        {KEY("project"), NUMBER(8)}
+    );
+
+    // Define a student object with arithmetic for grades (exam and project weighted average)
+    JSON(students) = ARRAY(
+        OBJECT(
+            {KEY("name"), STRING("Nikos ") + STRING("Nikolaou")},
+            {KEY("id"), NUMBER(4444)},
+            {KEY("grades"), ARRAY(
+                OBJECT(
+                    {KEY("hy352"), 
+                        // Using getKeyValues() to access the "exam" and "project" keys
+                        std::dynamic_pointer_cast<JsonObject>(hy352_nik)->getKeyValues()[0].second * NUMBER(0.75) + 
+                        std::dynamic_pointer_cast<JsonObject>(hy352_nik)->getKeyValues()[1].second * NUMBER(0.25)
+                    }
+                )
+            )},
+            {KEY("courses"), ARRAY(
+                STRING("CS101"),
+                STRING("CS102")
+            )}
+        ),
+        OBJECT(
+            {KEY("name"), STRING("Maria ") + STRING("Papadopoulou")},
+            {KEY("id"), NUMBER(4445)},
+            {KEY("grades"), ARRAY(
+                OBJECT(
+                    {KEY("hy352"), 
+                        // Using getKeyValues() to access the "exam" and "project" keys
+                        std::dynamic_pointer_cast<JsonObject>(hy352_nik)->getKeyValues()[0].second * NUMBER(0.75) + 
+                        std::dynamic_pointer_cast<JsonObject>(hy352_nik)->getKeyValues()[1].second * NUMBER(0.25)
+                    }
+                )
+            )},
+            {KEY("courses"), ARRAY(
+                STRING("CS101"),
+                STRING("CS201")
+            )}
+        )
+    );
+
+    // Print all students and their calculated grades
+    for (const auto& student : std::dynamic_pointer_cast<JsonArray>(students)->getValues()) {
+        student->print();  // Print each student object in the array
+        std::cout << std::endl;
+    }
+
     return 0;
 }

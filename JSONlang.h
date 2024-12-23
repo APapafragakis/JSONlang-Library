@@ -23,6 +23,10 @@ public:
     virtual bool operator!=(const JsonValue& other) const {
         return !(*this == other);  // Default negation of equality
     }
+    virtual size_t size() const; // Default size method
+    virtual bool isEmpty() const; // Default isEmpty method
+    virtual bool hasKey(const std::string& key) const; // Default hasKey method
+    virtual std::string typeOf() const; // Default typeOf method
 
     virtual ~JsonValue() = default;
 };
@@ -33,7 +37,7 @@ public:
     explicit JsonBoolean(bool val);  // Constructor declaration
     void print() const override;     // print method declaration
     bool getValue() const;           // getValue method declaration
-
+    std::string typeOf() const override; // Override typeOf for boolean
     virtual bool operator==(const JsonValue& other) const override;
 
     std::shared_ptr<JsonValue> operator&&(const JsonValue& other) const;
@@ -48,7 +52,7 @@ public:
     explicit JsonString(const std::string& val);
     void print() const override;
     virtual bool operator==(const JsonValue& other) const override;
-    // Add this getter method
+    std::string typeOf() const override; // Override typeOf for string
     const std::string& getValue() const { return value; }
 };
 
@@ -62,7 +66,7 @@ public:
 
     // Getter for value
     double getValue() const { return value; }
-
+    std::string typeOf() const override; // Override typeOf for number
     virtual bool operator==(const JsonValue& other) const override;
     // Overload arithmetic operators for JsonNumber
     std::shared_ptr<JsonValue> operator+(const JsonValue& other) const;
@@ -90,6 +94,11 @@ public:
     void erase() override;
     void print() const override;
     virtual bool operator==(const JsonValue& other) const override;
+    size_t size() const override; // Override size for object
+    bool isEmpty() const override; // Override isEmpty for object
+    bool hasKey(const std::string& key) const override; // Override hasKey for object
+    std::string typeOf() const override; // Override typeOf for object
+
     const std::vector<std::pair<std::string, std::shared_ptr<JsonValue>>>& getKeyValues() const { return keyValues; }  // Add const qualifier
 };
 
@@ -105,7 +114,10 @@ public:
     void print() const override;
     virtual bool operator==(const JsonValue& other) const override;
 
-    size_t size() const;
+    size_t size() const override; // Override size for array
+    bool isEmpty() const override; // Override isEmpty for array
+    std::string typeOf() const override; // Override typeOf for array
+
     const std::vector<std::shared_ptr<JsonValue>>& getValues() const { return values; }  // Add const qualifier
 };
 
@@ -129,6 +141,12 @@ void ERASE(std::shared_ptr<JsonValue> target, const std::string& firstKey, Args.
     }
 }
 
+void printJsonExpressions(); // Base case for recursion
+
+template <typename T, typename... Args>
+void printJsonExpressions(T first, Args... rest);
+
+
 inline std::ostream& operator<<(std::ostream& os, const std::shared_ptr<JsonValue>& jsonValue) {
     jsonValue->print();  // Call the print function of the stored JsonValue
     return os;
@@ -142,7 +160,11 @@ inline std::ostream& operator<<(std::ostream& os, const std::shared_ptr<JsonValu
 #define NUMBER(value) std::make_shared<JsonNumber>(value)
 #define KEY(key) key
 #define BOOLEAN(value) std::make_shared<JsonBoolean>(value)
-
+#define SIZE_OF(json_value) (json_value->size())
+#define IS_EMPTY(json_value) (json_value->isEmpty())
+#define HAS_KEY(json_value, key) (json_value->hasKey(key))
+#define TYPE_OF(json_value) (json_value->typeOf())
+#define PRINT(...) printJsonExpressions(__VA_ARGS__)
 
 // Operators for shared_ptr<JsonValue>
 std::shared_ptr<JsonValue> operator+(const std::shared_ptr<JsonValue>& lhs, const std::shared_ptr<JsonValue>& rhs);
