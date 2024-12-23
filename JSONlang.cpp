@@ -15,7 +15,6 @@ void JsonNumber::print() const {
 }
 
 
-// JsonString Implementation
 std::shared_ptr<JsonValue> operator+(const std::shared_ptr<JsonValue>& lhs, const std::shared_ptr<JsonValue>& rhs) {
     // Handle JsonNumber addition
     auto num_lhs = std::dynamic_pointer_cast<JsonNumber>(lhs);
@@ -31,10 +30,37 @@ std::shared_ptr<JsonValue> operator+(const std::shared_ptr<JsonValue>& lhs, cons
         return std::make_shared<JsonString>(str_lhs->getValue() + str_rhs->getValue());
     }
 
+    // Handle JsonArray concatenation
+    auto arr_lhs = std::dynamic_pointer_cast<JsonArray>(lhs);
+    auto arr_rhs = std::dynamic_pointer_cast<JsonArray>(rhs);
+    if (arr_lhs && arr_rhs) {
+        auto result = std::make_shared<JsonArray>();
+        for (const auto& val : arr_lhs->getValues()) {
+            result->append(val);
+        }
+        for (const auto& val : arr_rhs->getValues()) {
+            result->append(val);
+        }
+        return result;
+    }
+
+    // Handle JsonObject merging
+    auto obj_lhs = std::dynamic_pointer_cast<JsonObject>(lhs);
+    auto obj_rhs = std::dynamic_pointer_cast<JsonObject>(rhs);
+    if (obj_lhs && obj_rhs) {
+        auto result = std::make_shared<JsonObject>();
+        for (const auto& pair : obj_lhs->getKeyValues()) {
+            result->set(pair.first, pair.second);
+        }
+        for (const auto& pair : obj_rhs->getKeyValues()) {
+            result->set(pair.first, pair.second);
+        }
+        return result;
+    }
+
     // If types don't match, throw an error
     throw std::runtime_error("Unsupported types for operator+");
 }
-
 
 
 std::shared_ptr<JsonValue> operator-(const std::shared_ptr<JsonValue>& lhs, const std::shared_ptr<JsonValue>& rhs) {
