@@ -10,8 +10,12 @@ int main() {
     // Prosthesi neas thermokrasias ston pinaka
     SET(week_temperatures)[3] ASSIGN(NUMBER(21.5));
 
+    SET(week_temperatures)[0] ASSIGN(ARRAY(OBJECT ({KEY("time"), STRING("morning")})));
+
     // Prosthesi pollaplon thermokrasion ston pinaka
     SET(week_temperatures) APPEND(NUMBER(23), NUMBER(22), NUMBER(20));
+
+    SET(week_temperatures)[0] APPEND(OBJECT ({KEY("time"), STRING("night")}));
 
     // Ektypwsi tou ananeomenou pinaka thermokrasion
     std::cout << "Updated Week Temperatures: ";
