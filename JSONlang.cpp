@@ -449,3 +449,36 @@ void ERASE(std::shared_ptr<JsonValue> target, const std::string& key) {
     }
     obj->erase(key);
 }
+
+void printJson(const std::shared_ptr<JsonValue>& jsonValue, const std::string& keyPath) {
+    size_t pos = 0;
+    std::shared_ptr<JsonValue> currentValue = jsonValue;
+    std::string path = keyPath;
+
+    // Traverse the key path
+    while ((pos = path.find(".")) != std::string::npos) {
+        std::string key = path.substr(0, pos);
+        path.erase(0, pos + 1);
+
+        auto obj = std::dynamic_pointer_cast<JsonObject>(currentValue);
+        if (!obj || !obj->hasKey(key)) {
+            std::cerr << "Key not found: " << key << std::endl;
+            return;
+        }
+        currentValue = obj->get(key);
+    }
+
+    // Handle the final key
+    if (!path.empty()) {
+        auto obj = std::dynamic_pointer_cast<JsonObject>(currentValue);
+        if (!obj || !obj->hasKey(path)) {
+            std::cerr << "Key not found: " << path << std::endl;
+            return;
+        }
+        currentValue = obj->get(path);
+    }
+
+    // Print the value
+    currentValue->print();
+    std::cout << std::endl;
+}

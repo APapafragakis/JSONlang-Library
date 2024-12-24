@@ -11,6 +11,7 @@
 
     class JsonValue; 
 
+    void printJson(const std::shared_ptr<JsonValue>& jsonValue, const std::string& keyPath);
 
     // Base class for all JSON values
     class JsonValue {
@@ -98,7 +99,6 @@
         bool isEmpty() const override; // Override isEmpty for object
         bool hasKey(const std::string& key) const override; // Override hasKey for object
         std::string typeOf() const override; // Override typeOf for object
-
         const std::vector<std::pair<std::string, std::shared_ptr<JsonValue>>>& getKeyValues() const { return keyValues; }  // Add const qualifier
     };
 
@@ -164,6 +164,34 @@
         return os;
     }
 
+
+template <typename T>
+void PRINT(const std::shared_ptr<JsonValue>& jsonValue, T&& key) {
+    if constexpr (std::is_same_v<std::decay_t<T>, bool>) {
+        // Handle boolean keys
+        std::cout << (key ? "true" : "false") << std::endl;
+    } else if constexpr (std::is_same_v<std::decay_t<T>, const char*> || std::is_same_v<std::decay_t<T>, std::string>) {
+        // Handle string keys
+        printJson(jsonValue, key);
+    } else {
+        // For other types, print the value directly
+        std::cout << key << std::endl;
+    }
+}
+
+
+template <typename T, typename... Args>
+void printJsonHelper(const std::shared_ptr<JsonValue>& jsonValue, T&& first, Args&&... rest) {
+    // Print the first argument
+    printJsonHelper(jsonValue, std::forward<T>(first));
+
+    // Recursively handle the rest
+    if constexpr (sizeof...(rest) > 0) {
+        printJsonHelper(jsonValue, std::forward<Args>(rest)...);
+    }
+}
+
+
     // Macros for JSON syntax
     #define JSON(name) std::shared_ptr<JsonValue> name
     #define OBJECT(...) std::make_shared<JsonObject>(std::initializer_list<std::pair<std::string, std::shared_ptr<JsonValue>>>{__VA_ARGS__})
@@ -182,6 +210,7 @@
     #define IS_EMPTY(json_value) (json_value->isEmpty())
     #define HAS_KEY(json_value, key) (json_value->hasKey(key))
     #define TYPE_OF(json_value) (json_value->typeOf())
+
 
 
     // Operators for shared_ptr<JsonValue>
