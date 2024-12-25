@@ -97,7 +97,7 @@ int main() {
 
     // Ektypwsi apotelesmatwn sygkriseon pinakwn
     std::cout << "Array comparisons:\n";
-    std::cout << "arr1 == arr2: " << (*arr1 == *arr2 ? "true" : "false") << std::endl;  // Anamenomeno Apotelesma: true
+    std::cout << "arr1 == arr2: " << (OBJECT({ "key1", NUMBER(42) }, { "key2", STRING("Hello") }) == OBJECT({ "key1", NUMBER(42) }, { "key2", STRING("Hello") }) ? "true" : "false") << std::endl;  // Anamenomeno Apotelesma: true
     std::cout << "arr1 != arr3: " << (*arr1 != *arr3 ? "true" : "false") << std::endl << std::endl;  // Anamenomeno Apotelesma: true
 
     // Ektypwsi apotelesmatwn sygkriseon antikeimenwn
