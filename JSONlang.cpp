@@ -116,6 +116,39 @@ std::shared_ptr<JsonValue> operator>(const std::shared_ptr<JsonValue>& lhs, cons
     throw std::runtime_error("Both operands must be JsonNumber for comparison.");
 }
 
+bool JsonNumber::operator<(const JsonValue& other) const {
+    auto otherNumber = dynamic_cast<const JsonNumber*>(&other);
+    if (!otherNumber) {
+        throw std::runtime_error("Relational operator < can only be applied between JsonNumber values.");
+    }
+    return this->value < otherNumber->value; // Correctly compare the numeric values
+}
+
+bool JsonNumber::operator>(const JsonValue& other) const {
+    auto otherNumber = dynamic_cast<const JsonNumber*>(&other);
+    if (!otherNumber) {
+        throw std::runtime_error("Relational operator > can only be applied between JsonNumber values.");
+    }
+    return this->value > otherNumber->value;
+}
+
+bool JsonNumber::operator>=(const JsonValue& other) const {
+    auto otherNumber = dynamic_cast<const JsonNumber*>(&other);
+    if (!otherNumber) {
+        throw std::runtime_error("Relational operator >= can only be applied between JsonNumber values.");
+    }
+    return this->value >= otherNumber->value;
+}
+
+bool JsonNumber::operator<=(const JsonValue& other) const {
+    auto otherNumber = dynamic_cast<const JsonNumber*>(&other);
+    if (!otherNumber) {
+        throw std::runtime_error("Relational operator <= can only be applied between JsonNumber values.");
+    }
+    return this->value <= otherNumber->value;
+}
+
+
 // Less than operator '<'
 std::shared_ptr<JsonValue> operator<(const std::shared_ptr<JsonValue>& lhs, const std::shared_ptr<JsonValue>& rhs) {
     auto num_lhs = std::dynamic_pointer_cast<JsonNumber>(lhs);
@@ -160,28 +193,22 @@ std::shared_ptr<JsonValue> operator/(const std::shared_ptr<JsonValue>& lhs, cons
 
 // Implement logical AND (&&) for JsonBoolean
 std::shared_ptr<JsonValue> JsonBoolean::operator&&(const JsonValue& other) const {
-    // Try to cast 'other' to JsonBoolean (as a shared pointer)
-    auto otherBool = std::dynamic_pointer_cast<JsonBoolean>(std::shared_ptr<JsonValue>(const_cast<JsonValue*>(&other)));
-    if (otherBool) {
-        return std::make_shared<JsonBoolean>(this->value && otherBool->getValue());
+    auto otherBool = dynamic_cast<const JsonBoolean*>(&other);
+    if (!otherBool) {
+        throw std::runtime_error("Logical AND (&&) can only be applied between JsonBoolean values.");
     }
-    throw std::runtime_error("Logical AND (&&) can only be applied between JsonBoolean values.");
+    return std::make_shared<JsonBoolean>(this->value && otherBool->value);
 }
 
-// Implement logical OR (||) for JsonBoolean
+
 std::shared_ptr<JsonValue> JsonBoolean::operator||(const JsonValue& other) const {
-    // Try to cast 'other' to JsonBoolean (as a shared pointer)
-    auto otherBool = std::dynamic_pointer_cast<JsonBoolean>(std::shared_ptr<JsonValue>(const_cast<JsonValue*>(&other)));
-    if (otherBool) {
-        return std::make_shared<JsonBoolean>(this->value || otherBool->getValue());
+    auto otherBool = dynamic_cast<const JsonBoolean*>(&other);
+    if (!otherBool) {
+        throw std::runtime_error("Logical OR (||) can only be applied between JsonBoolean values.");
     }
-    throw std::runtime_error("Logical OR (||) can only be applied between JsonBoolean values.");
+    return std::make_shared<JsonBoolean>(this->value || otherBool->value);
 }
 
-// Implement logical NOT (!) for JsonBoolean
-std::shared_ptr<JsonValue> JsonBoolean::operator!() const {
-    return std::make_shared<JsonBoolean>(!this->value);
-}
 
 bool JsonBoolean::operator==(const JsonValue& other) const {
     auto otherBool = dynamic_cast<const JsonBoolean*>(&other);
