@@ -43,10 +43,10 @@ int main() {
     };
 
     // Orismos pinaka thermokrasion gia mia evdomada
-    JSON(week_temperatures) = ARRAY{
+    JSON(week_temperatures) = ARRAY[
             NUMBER(20), NUMBER(19.5), NUMBER(19), NUMBER(20),
             NUMBER(19), NUMBER(18.5), NUMBER(19)
-    };
+    ];
 
     // Orismos enos poliplokou antikeimenou me enthesa antikeimena kai pinakes gia mathites
     JSON(students) = ARRAY{
