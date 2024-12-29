@@ -1,4 +1,3 @@
-
 # Weaknesses of the Project
 
 ## JSON Variable Definition
