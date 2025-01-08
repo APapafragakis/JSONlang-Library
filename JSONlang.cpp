@@ -1,230 +1,191 @@
 #include "JSONlang.h"
 
+// JsonBoolean ulopoiisi
 JsonBoolean::JsonBoolean(bool val) : value(val) {}
 
 void JsonBoolean::print() const {
     std::cout << (value ? "true" : "false");
 }
 
-bool JsonBoolean::getValue() const {
-    return value;
+bool JsonBoolean::getValue() const { return value; }
+
+std::string JsonBoolean::typeOf() const { return "boolean"; }
+
+bool JsonBoolean::operator==(const JsonValue& other) const {
+    if (auto p = dynamic_cast<const JsonBoolean*>(&other)) {
+        return value == p->value;
+    }
+    return false;
 }
 
+std::shared_ptr<JsonValue> JsonBoolean::operator&&(const JsonValue& other) const {
+    if (auto p = dynamic_cast<const JsonBoolean*>(&other)) {
+        return std::make_shared<JsonBoolean>(value && p->value);
+    }
+    throw std::runtime_error("Den mporei na ginei AND me mh-boolean timi");
+}
+
+std::shared_ptr<JsonValue> JsonBoolean::operator||(const JsonValue& other) const {
+    if (auto p = dynamic_cast<const JsonBoolean*>(&other)) {
+        return std::make_shared<JsonBoolean>(value || p->value);
+    }
+    throw std::runtime_error("Den mporei na ginei OR me mh-boolean timi");
+}
+
+std::shared_ptr<JsonValue> JsonBoolean::operator!() const {
+    return std::make_shared<JsonBoolean>(!value);
+}
+
+// JsonString ulopoiisi
 JsonString::JsonString(const std::string& val) : value(val) {}
 
 void JsonString::print() const {
     std::cout << "\"" << value << "\"";
 }
 
+const std::string& JsonString::getValue() const { return value; }
+
+std::string JsonString::typeOf() const { return "string"; }
+
+bool JsonString::operator==(const JsonValue& other) const {
+    if (auto p = dynamic_cast<const JsonString*>(&other)) {
+        return value == p->value;
+    }
+    return false;
+}
+
+std::shared_ptr<JsonValue> JsonString::operator+(const JsonValue& other) const {
+    if (auto p = dynamic_cast<const JsonString*>(&other)) {
+        return std::make_shared<JsonString>(value + p->value);
+    }
+    throw std::runtime_error("Den mporei na ginei concatenate me mh-string timi");
+}
+
+// JsonNumber ulopoiisi
 JsonNumber::JsonNumber(double val) : value(val) {}
 
 void JsonNumber::print() const {
     std::cout << value;
 }
 
-// Syntelesth+ gia JsonNumber, JsonString, JsonArray, JsonObject
-std::shared_ptr<JsonValue> operator+(const std::shared_ptr<JsonValue>& lhs, const std::shared_ptr<JsonValue>& rhs) {
-    auto num_lhs = std::dynamic_pointer_cast<JsonNumber>(lhs);
-    auto num_rhs = std::dynamic_pointer_cast<JsonNumber>(rhs);
-    if (num_lhs && num_rhs) {
-        return std::make_shared<JsonNumber>(num_lhs->getValue() + num_rhs->getValue());
-    }
+double JsonNumber::getValue() const { return value; }
 
-    auto str_lhs = std::dynamic_pointer_cast<JsonString>(lhs);
-    auto str_rhs = std::dynamic_pointer_cast<JsonString>(rhs);
-    if (str_lhs && str_rhs) {
-        return std::make_shared<JsonString>(str_lhs->getValue() + str_rhs->getValue());
-    }
-
-    auto arr_lhs = std::dynamic_pointer_cast<JsonArray>(lhs);
-    auto arr_rhs = std::dynamic_pointer_cast<JsonArray>(rhs);
-    if (arr_lhs && arr_rhs) {
-        auto result = std::make_shared<JsonArray>();
-        for (const auto& val : arr_lhs->getValues()) {
-            result->append(val);
-        }
-        for (const auto& val : arr_rhs->getValues()) {
-            result->append(val);
-        }
-        return result;
-    }
-
-    auto obj_lhs = std::dynamic_pointer_cast<JsonObject>(lhs);
-    auto obj_rhs = std::dynamic_pointer_cast<JsonObject>(rhs);
-    if (obj_lhs && obj_rhs) {
-        auto result = std::make_shared<JsonObject>();
-        for (const auto& pair : obj_lhs->getKeyValues()) {
-            result->set(pair.first, pair.second);
-        }
-        for (const auto& pair : obj_rhs->getKeyValues()) {
-            result->set(pair.first, pair.second);
-        }
-        return result;
-    }
-
-    throw std::runtime_error("Unsupported types for operator+");
-}
-
-// Syntelesths-
-std::shared_ptr<JsonValue> operator-(const std::shared_ptr<JsonValue>& lhs, const std::shared_ptr<JsonValue>& rhs) {
-    auto num_lhs = std::dynamic_pointer_cast<JsonNumber>(lhs);
-    auto num_rhs = std::dynamic_pointer_cast<JsonNumber>(rhs);
-    if (num_lhs && num_rhs) {
-        return std::make_shared<JsonNumber>(num_lhs->getValue() - num_rhs->getValue());
-    }
-    throw std::runtime_error("Both operands must be JsonNumber.");
-}
-
-// Syntelesths*
-std::shared_ptr<JsonValue> operator*(const std::shared_ptr<JsonValue>& lhs, const std::shared_ptr<JsonValue>& rhs) {
-    auto num_lhs = std::dynamic_pointer_cast<JsonNumber>(lhs);
-    auto num_rhs = std::dynamic_pointer_cast<JsonNumber>(rhs);
-    if (num_lhs && num_rhs) {
-        return std::make_shared<JsonNumber>(num_lhs->getValue() * num_rhs->getValue());
-    }
-    throw std::runtime_error("Both operands must be JsonNumber.");
-}
-
-// Syntelesths %
-std::shared_ptr<JsonValue> operator%(const std::shared_ptr<JsonValue>& lhs, const std::shared_ptr<JsonValue>& rhs) {
-    auto num_lhs = std::dynamic_pointer_cast<JsonNumber>(lhs);
-    auto num_rhs = std::dynamic_pointer_cast<JsonNumber>(rhs);
-    if (num_lhs && num_rhs) {
-        if (static_cast<int>(num_lhs->getValue()) != num_lhs->getValue() || 
-            static_cast<int>(num_rhs->getValue()) != num_rhs->getValue()) {
-            throw std::runtime_error("Modulus operator requires integer values.");
-        }
-        return std::make_shared<JsonNumber>(static_cast<int>(num_lhs->getValue()) % static_cast<int>(num_rhs->getValue()));
-    }
-    throw std::runtime_error("Both operands must be JsonNumber.");
-}
-
-// Syntelesths /
-std::shared_ptr<JsonValue> operator/(const std::shared_ptr<JsonValue>& lhs, const std::shared_ptr<JsonValue>& rhs) {
-    auto num_lhs = std::dynamic_pointer_cast<JsonNumber>(lhs);
-    auto num_rhs = std::dynamic_pointer_cast<JsonNumber>(rhs);
-    if (num_lhs && num_rhs) {
-        if (num_rhs->getValue() == 0) {
-            throw std::runtime_error("Division by zero.");
-        }
-        return std::make_shared<JsonNumber>(num_lhs->getValue() / num_rhs->getValue());
-    }
-    throw std::runtime_error("Both operands must be JsonNumber.");
-}
-
-// Sygkrish me >
-std::shared_ptr<JsonValue> operator>(const std::shared_ptr<JsonValue>& lhs, const std::shared_ptr<JsonValue>& rhs) {
-    auto num_lhs = std::dynamic_pointer_cast<JsonNumber>(lhs);
-    auto num_rhs = std::dynamic_pointer_cast<JsonNumber>(rhs);
-    if (num_lhs && num_rhs) {
-        return std::make_shared<JsonBoolean>(num_lhs->getValue() > num_rhs->getValue());
-    }
-    throw std::runtime_error("Both operands must be JsonNumber for comparison.");
-}
-
-// Sygkrish me <
-std::shared_ptr<JsonValue> operator<(const std::shared_ptr<JsonValue>& lhs, const std::shared_ptr<JsonValue>& rhs) {
-    auto num_lhs = std::dynamic_pointer_cast<JsonNumber>(lhs);
-    auto num_rhs = std::dynamic_pointer_cast<JsonNumber>(rhs);
-    if (num_lhs && num_rhs) {
-        return std::make_shared<JsonBoolean>(num_lhs->getValue() < num_rhs->getValue());
-    }
-    throw std::runtime_error("Both operands must be JsonNumber for comparison.");
-}
-
-// Sygkrish me >=
-std::shared_ptr<JsonValue> operator>=(const std::shared_ptr<JsonValue>& lhs, const std::shared_ptr<JsonValue>& rhs) {
-    auto num_lhs = std::dynamic_pointer_cast<JsonNumber>(lhs);
-    auto num_rhs = std::dynamic_pointer_cast<JsonNumber>(rhs);
-    if (num_lhs && num_rhs) {
-        return std::make_shared<JsonBoolean>(num_lhs->getValue() >= num_rhs->getValue());
-    }
-    throw std::runtime_error("Both operands must be JsonNumber for comparison.");
-}
-
-// Sygkrish me <=
-std::shared_ptr<JsonValue> operator<=(const std::shared_ptr<JsonValue>& lhs, const std::shared_ptr<JsonValue>& rhs) {
-    auto num_lhs = std::dynamic_pointer_cast<JsonNumber>(lhs);
-    auto num_rhs = std::dynamic_pointer_cast<JsonNumber>(rhs);
-    if (num_lhs && num_rhs) {
-        return std::make_shared<JsonBoolean>(num_lhs->getValue() <= num_rhs->getValue());
-    }
-    throw std::runtime_error("Both operands must be JsonNumber for comparison.");
-}
-
-bool JsonBoolean::operator==(const JsonValue& other) const {
-    auto otherBool = dynamic_cast<const JsonBoolean*>(&other);
-    return otherBool && (this->value == otherBool->getValue());
-}
+std::string JsonNumber::typeOf() const { return "number"; }
 
 bool JsonNumber::operator==(const JsonValue& other) const {
-    auto otherNum = dynamic_cast<const JsonNumber*>(&other);
-    return otherNum && (this->value == otherNum->getValue());
-}
-
-bool JsonString::operator==(const JsonValue& other) const {
-    auto otherStr = dynamic_cast<const JsonString*>(&other);
-    return otherStr && (this->value == otherStr->getValue());
-}
-
-bool JsonArray::operator==(const JsonValue& other) const {
-    auto otherArr = dynamic_cast<const JsonArray*>(&other);
-    if (otherArr && this->size() == otherArr->size()) {
-        for (size_t i = 0; i < this->size(); ++i) {
-            if (!(*this->getValues()[i] == *otherArr->getValues()[i])) {
-                return false;
-            }
-        }
-        return true;
+    if (auto p = dynamic_cast<const JsonNumber*>(&other)) {
+        return value == p->value;
     }
     return false;
 }
 
-bool JsonObject::operator==(const JsonValue& other) const {
-    auto otherObj = dynamic_cast<const JsonObject*>(&other);
-    if (otherObj && this->getKeyValues().size() == otherObj->getKeyValues().size()) {
-        for (const auto& pair : this->getKeyValues()) {
-            auto rhsVal = otherObj->get(pair.first);
-            if (*pair.second != *rhsVal) {
-                return false;
-            }
-        }
-        return true;
+std::shared_ptr<JsonValue> JsonNumber::operator+(const JsonValue& other) const {
+    if (auto p = dynamic_cast<const JsonNumber*>(&other)) {
+        return std::make_shared<JsonNumber>(value + p->value);
     }
-    return false;
+    throw std::runtime_error("Den mporei na ginei prosthesi me mh-arithmitiki timi");
 }
 
-JsonObject::JsonObject() = default;
+std::shared_ptr<JsonValue> JsonNumber::operator-(const JsonValue& other) const {
+    if (auto p = dynamic_cast<const JsonNumber*>(&other)) {
+        return std::make_shared<JsonNumber>(value - p->value);
+    }
+    throw std::runtime_error("Den mporei na ginei afairesi me mh-arithmitiki timi");
+}
 
-JsonObject::JsonObject(std::initializer_list<std::pair<std::string, std::shared_ptr<JsonValue>>> init) : keyValues(init) {}
+std::shared_ptr<JsonValue> JsonNumber::operator*(const JsonValue& other) const {
+    if (auto p = dynamic_cast<const JsonNumber*>(&other)) {
+        return std::make_shared<JsonNumber>(value * p->value);
+    }
+    throw std::runtime_error("Den mporei na ginei pollaplasiasmos me mh-arithmitiki timi");
+}
 
-// Eisagogh klhdiou-kai timhs
+std::shared_ptr<JsonValue> JsonNumber::operator/(const JsonValue& other) const {
+    if (auto p = dynamic_cast<const JsonNumber*>(&other)) {
+        if (p->value == 0) throw std::runtime_error("Diairesh me to 0");
+        return std::make_shared<JsonNumber>(value / p->value);
+    }
+    throw std::runtime_error("Den mporei na ginei diairesi me mh-arithmitiki timi");
+}
+
+std::shared_ptr<JsonValue> JsonNumber::operator%(const JsonValue& other) const {
+    if (auto p = dynamic_cast<const JsonNumber*>(&other)) {
+        if (p->value == 0) throw std::runtime_error("Modulo me to 0");
+        return std::make_shared<JsonNumber>(std::fmod(value, p->value));
+    }
+    throw std::runtime_error("Den mporei na ginei modulo me mh-arithmitiki timi");
+}
+
+bool JsonNumber::operator>(const JsonValue& other) const {
+    if (auto p = dynamic_cast<const JsonNumber*>(&other)) {
+        return value > p->value;
+    }
+    throw std::runtime_error("Den ypostirizetai sygkrisi gia mh-arithmitiki timi");
+}
+
+bool JsonNumber::operator>=(const JsonValue& other) const {
+    if (auto p = dynamic_cast<const JsonNumber*>(&other)) {
+        return value >= p->value;
+    }
+    throw std::runtime_error("Den ypostirizetai sygkrisi gia mh-arithmitiki timi");
+}
+
+bool JsonNumber::operator<(const JsonValue& other) const {
+    if (auto p = dynamic_cast<const JsonNumber*>(&other)) {
+        return value < p->value;
+    }
+    throw std::runtime_error("Den ypostirizetai sygkrisi gia mh-arithmitiki timi");
+}
+
+bool JsonNumber::operator<=(const JsonValue& other) const {
+    if (auto p = dynamic_cast<const JsonNumber*>(&other)) {
+        return value <= p->value;
+    }
+    throw std::runtime_error("Den ypostirizetai sygkrisi gia mh-arithmitiki timi");
+}
+
+// JsonObject ulopoiisi
+JsonObject::JsonObject(const std::vector<std::pair<std::string, std::shared_ptr<JsonValue>>>& init)
+    : keyValues(init) {}
+
 void JsonObject::set(const std::string& key, std::shared_ptr<JsonValue> value) {
-    for (auto& pair : keyValues) {
-        if (pair.first == key) {
-            pair.second = value;
-            return;
-        }
+    auto it = std::find_if(keyValues.begin(), keyValues.end(),
+        [&key](const auto& pair) { return pair.first == key; });
+    if (it != keyValues.end()) {
+        it->second = value;
+    } else {
+        keyValues.push_back({key, value});
     }
-    keyValues.emplace_back(key, value);
 }
 
 const std::shared_ptr<JsonValue>& JsonObject::get(const std::string& key) const {
+    auto it = std::find_if(keyValues.begin(), keyValues.end(),
+        [&key](const auto& pair) { return pair.first == key; });
+    if (it == keyValues.end()) {
+        throw std::runtime_error("Den vrethike kleidi: " + key);
+    }
+    return it->second;
+}
+
+void JsonObject::print() const {
+    std::cout << "{";
+    bool first = true;
     for (const auto& pair : keyValues) {
-        if (pair.first == key) {
-            return pair.second;
+        if (pair.second) {  // Ektypose mono mh-null times
+            if (!first) std::cout << ", ";
+            std::cout << "\"" << pair.first << "\": ";
+            pair.second->print();
+            first = false;
         }
     }
-    throw std::runtime_error("Key not found: " + key);
+    std::cout << "}";
 }
 
 void JsonObject::erase(const std::string& key) {
-    auto it = std::remove_if(keyValues.begin(), keyValues.end(),
-        [&key](const std::pair<std::string, std::shared_ptr<JsonValue>>& pair) {
-            return pair.first == key;
-        });
+    auto it = std::find_if(keyValues.begin(), keyValues.end(),
+        [&key](const auto& pair) { return pair.first == key; });
     if (it != keyValues.end()) {
-        keyValues.erase(it, keyValues.end());
+        keyValues.erase(it);
     }
 }
 
@@ -232,33 +193,76 @@ void JsonObject::erase() {
     keyValues.clear();
 }
 
-// Ektypwsh JsonObject
-void JsonObject::print() const {
-    std::cout << "{";
-    for (size_t i = 0; i < keyValues.size(); ++i) {
-        if (i > 0) std::cout << ", ";
-        std::cout << "\"" << keyValues[i].first << "\": ";
-        keyValues[i].second->print();
+bool JsonObject::operator==(const JsonValue& other) const {
+    if (auto p = dynamic_cast<const JsonObject*>(&other)) {
+        return keyValues == p->keyValues;
     }
-    std::cout << "}";
+    return false;
 }
 
-JsonArray::JsonArray() = default;
+size_t JsonObject::size() const {
+    return keyValues.size();
+}
 
-JsonArray::JsonArray(std::initializer_list<std::shared_ptr<JsonValue>> init) : values(init) {}
+bool JsonObject::isEmpty() const {
+    return keyValues.empty();
+}
 
-// Orismos timhs se sygkekrimeno index
+bool JsonObject::hasKey(const std::string& key) const {
+    return std::find_if(keyValues.begin(), keyValues.end(),
+        [&key](const auto& pair) { return pair.first == key; }) != keyValues.end();
+}
+
+std::string JsonObject::typeOf() const {
+    return "object";
+}
+
+const std::vector<std::pair<std::string, std::shared_ptr<JsonValue>>>& JsonObject::getKeyValues() const {
+    return keyValues;
+}
+
+std::shared_ptr<JsonValue>& JsonObject::operator[](const std::string& key) {
+    auto it = std::find_if(keyValues.begin(), keyValues.end(),
+        [&key](const auto& pair) { return pair.first == key; });
+    if (it != keyValues.end()) {
+        return it->second;
+    }
+    keyValues.push_back({key, nullptr});
+    return keyValues.back().second;
+}
+
+JsonValue& JsonObject::operator=(const std::shared_ptr<JsonValue>& other) {
+    if (auto obj = std::dynamic_pointer_cast<JsonObject>(other)) {
+        keyValues = obj->keyValues;
+    }
+    return *this;
+}
+
+std::shared_ptr<JsonValue> JsonObject::operator+(const JsonValue& other) const {
+    if (auto p = dynamic_cast<const JsonObject*>(&other)) {
+        std::vector<std::pair<std::string, std::shared_ptr<JsonValue>>> newKeyValues(keyValues);
+        for (const auto& pair : p->keyValues) {
+            newKeyValues.push_back(pair);
+        }
+        return std::make_shared<JsonObject>(newKeyValues);
+    }
+    throw std::runtime_error("Den mporei na ginei concatenate me mh-object timi");
+}
+
+// JsonArray ulopoiisi
+JsonArray::JsonArray(const std::vector<std::shared_ptr<JsonValue>>& init)
+    : values(init) {}
+
 void JsonArray::set(size_t index, std::shared_ptr<JsonValue> value) {
     if (index >= values.size()) {
-        values.resize(index + 1, nullptr);
+        throw std::out_of_range("Array index ekso apo oria");
     }
     values[index] = value;
 }
 
-// Eisagwgh timhs se index
 std::shared_ptr<JsonValue>& JsonArray::get(size_t index) {
     if (index >= values.size()) {
-        throw std::runtime_error("Index out of range");
+        throw std::out_of_range("Array index ekso apo oria");
     }
     return values[index];
 }
@@ -267,12 +271,22 @@ void JsonArray::append(std::shared_ptr<JsonValue> value) {
     values.push_back(value);
 }
 
-// Diagrafh se sygkekrimeno index
+void JsonArray::print() const {
+    std::cout << "[";
+    bool first = true;
+    for (const auto& val : values) {
+        if (val) {  // Ektypose mono mh-null times
+            if (!first) std::cout << ", ";
+            val->print();
+            first = false;
+        }
+    }
+    std::cout << "]";
+}
+
 void JsonArray::erase(size_t index) {
     if (index < values.size()) {
         values.erase(values.begin() + index);
-    } else {
-        throw std::runtime_error("Index out of range for erase operation.");
     }
 }
 
@@ -280,170 +294,94 @@ void JsonArray::erase() {
     values.clear();
 }
 
-// Ektypwsh JsonArray
-void JsonArray::print() const {
-    std::cout << "[";
-    for (size_t i = 0; i < values.size(); ++i) {
-        if (i > 0) std::cout << ", ";
-        values[i]->print();
+bool JsonArray::operator==(const JsonValue& other) const {
+    if (auto p = dynamic_cast<const JsonArray*>(&other)) {
+        return values == p->values;
     }
-    std::cout << "]";
+    return false;
 }
 
 size_t JsonArray::size() const {
     return values.size();
 }
 
-// Allagh megethous JsonArray
-void JsonArray::resize(size_t newSize, std::shared_ptr<JsonValue> defaultValue) {
-    values.resize(newSize, defaultValue);
-}
-
-JsonSetter::JsonSetter(std::shared_ptr<JsonValue>& target) : target(target) {}
-
-JsonSetter JsonSetter::operator[](const std::string& key) {
-    auto obj = std::dynamic_pointer_cast<JsonObject>(target);
-    if (!obj) {
-        target = std::make_shared<JsonObject>();
-        obj = std::dynamic_pointer_cast<JsonObject>(target);
-    }
-
-    try {
-        auto& value = const_cast<std::shared_ptr<JsonValue>&>(obj->get(key));
-        return JsonSetter(value);
-    } catch (const std::runtime_error&) {
-        obj->set(key, std::make_shared<JsonString>(""));
-        auto& value = const_cast<std::shared_ptr<JsonValue>&>(obj->get(key));
-        return JsonSetter(value);
-    }
-}
-
-JsonSetter JsonSetter::operator[](size_t index) {
-    auto arr = std::dynamic_pointer_cast<JsonArray>(target);
-    if (!arr) {
-        target = std::make_shared<JsonArray>();
-        arr = std::dynamic_pointer_cast<JsonArray>(target);
-    }
-    if (!arr) {
-        throw std::runtime_error("Failed to initialize JsonArray.");
-    }
-
-    if (index >= arr->size()) {
-        arr->resize(index + 1, std::make_shared<JsonString>(""));
-    }
-    return JsonSetter(arr->get(index));
-}
-
-void JsonSetter::assign(std::shared_ptr<JsonValue> value) {
-    target = value;
-}
-
-// Prosthikh se JsonArray
-void JsonSetter::append(std::initializer_list<std::shared_ptr<JsonValue>> values) {
-    auto arr = std::dynamic_pointer_cast<JsonArray>(target);
-    if (!arr) {
-        throw std::runtime_error("Target is not a JSON array; cannot append values.");
-    }
-    for (auto& value : values) {
-        arr->append(value);
-    }
-}
-
-size_t JsonValue::size() const {
-    return 1;
-}
-
-size_t JsonObject::size() const {
-    return keyValues.size();
-}
-
-bool JsonValue::isEmpty() const {
-    return false;
-}
-
-bool JsonObject::isEmpty() const {
-    return keyValues.empty() ? true : false;
-}
-
 bool JsonArray::isEmpty() const {
-    return values.empty() ? true : false;
-}
-
-bool JsonValue::hasKey(const std::string& key) const {
-    return false;
-}
-
-bool JsonObject::hasKey(const std::string& key) const {
-    for (const auto& pair : keyValues) {
-        if (pair.first == key) {
-            return true;
-        }
-    }
-    return false;
-}
-
-std::string JsonValue::typeOf() const {
-    return "null";
-}
-
-std::string JsonBoolean::typeOf() const {
-    return "boolean";
-}
-
-std::string JsonString::typeOf() const {
-    return "string";
-}
-
-std::string JsonNumber::typeOf() const {
-    return "number";
-}
-
-std::string JsonObject::typeOf() const {
-    return "object";
+    return values.empty();
 }
 
 std::string JsonArray::typeOf() const {
     return "array";
 }
 
-// Sunarthseis ERASE gia JsonValues
-void ERASE(std::shared_ptr<JsonValue> target) {
-    target->erase();
+const std::vector<std::shared_ptr<JsonValue>>& JsonArray::getValues() const {
+    return values;
 }
 
-void ERASE(std::shared_ptr<JsonValue> target, const std::string& key) {
-    auto obj = std::dynamic_pointer_cast<JsonObject>(target);
-    if (!obj) {
-        throw std::runtime_error("Target is not a JSON object.");
+std::shared_ptr<JsonValue>& JsonArray::operator[](size_t index) {
+    if (index >= values.size()) {
+        values.resize(index + 1);
     }
-    obj->erase(key);
+    return values[index];
 }
 
-// Ektypwsh JSON symfwna me KeyPath
+JsonValue& JsonArray::operator=(const std::shared_ptr<JsonValue>& other) {
+    if (auto arr = std::dynamic_pointer_cast<JsonArray>(other)) {
+        values = arr->values;
+    }
+    return *this;
+}
+
+std::shared_ptr<JsonValue> JsonArray::operator+(const JsonValue& other) const {
+    if (auto p = dynamic_cast<const JsonArray*>(&other)) {
+        std::vector<std::shared_ptr<JsonValue>> newValues(values);
+        newValues.insert(newValues.end(), p->values.begin(), p->values.end());
+        return std::make_shared<JsonArray>(newValues);
+    }
+    throw std::runtime_error("Den mporei na ginei concatenate me mh-array timi");
+}
+
+// Voithitikes sunartiseis ulopoiisi
+void printJsonHelper(const std::shared_ptr<JsonValue>& value) {
+    if (!value) {
+        std::cout << "null" << std::endl;
+        return;
+    }
+    value->print();
+    std::cout << std::endl;
+}
+
+void printJson(const std::shared_ptr<JsonValue>& jsonValue) {
+    printJsonHelper(jsonValue);
+}
+
 void printJson(const std::shared_ptr<JsonValue>& jsonValue, const std::string& keyPath) {
+    if (!jsonValue) {
+        std::cout << "null" << std::endl;
+        return;
+    }
+
+    std::string current;
     size_t pos = 0;
     std::shared_ptr<JsonValue> currentValue = jsonValue;
-    std::string path = keyPath;
 
-    while ((pos = path.find(".")) != std::string::npos) {
-        std::string key = path.substr(0, pos);
-        path.erase(0, pos + 1);
-
-        auto obj = std::dynamic_pointer_cast<JsonObject>(currentValue);
-        if (!obj || !obj->hasKey(key)) {
-            std::cerr << "Key not found: " << key << std::endl;
+    while (pos < keyPath.length()) {
+        size_t nextDot = keyPath.find('.', pos);
+        current = keyPath.substr(pos, nextDot - pos);
+        
+        if (auto obj = dynamic_cast<JsonObject*>(currentValue.get())) {
+            try {
+                currentValue = obj->get(current);
+            } catch (const std::runtime_error&) {
+                std::cout << "null" << std::endl;
+                return;
+            }
+        } else {
+            std::cout << "null" << std::endl;
             return;
         }
-        currentValue = obj->get(key);
-    }
 
-    if (!path.empty()) {
-        auto obj = std::dynamic_pointer_cast<JsonObject>(currentValue);
-        if (!obj || !obj->hasKey(path)) {
-            std::cerr << "Key not found: " << path << std::endl;
-            return;
-        }
-        currentValue = obj->get(path);
+        if (nextDot == std::string::npos) break;
+        pos = nextDot + 1;
     }
 
     currentValue->print();
