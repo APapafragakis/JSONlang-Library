@@ -1,7 +1,6 @@
 #include "JSONlang.h"
-#include <iostream>
 
-int main() {
+PROGRAM_BEGIN
     // Orismos JSON metabliton gia dokimes
     JSON(non_empty_object) = OBJECT({
         {KEY(name), STRING("John")},
@@ -41,5 +40,4 @@ int main() {
     std::cout << "Type of single value (number): " << TYPE_OF(single_value_number) << std::endl;  // number
     std::cout << "Type of single value (boolean): " << TYPE_OF(single_value_boolean) << std::endl;  // boolean
 
-    return 0;
-}
+PROGRAM_END

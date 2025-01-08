@@ -1,7 +1,6 @@
 #include "JSONlang.h"
-#include <iostream>
 
-int main() {
+PROGRAM_BEGIN
     try {
         // Dimiourgia arxikon dedomenon JSON
         JSON(week_temperatures) = ARRAY({
@@ -61,5 +60,4 @@ int main() {
         std::cerr << "Exception: " << e.what() << std::endl;
     }
 
-    return 0;
-}
+PROGRAM_END

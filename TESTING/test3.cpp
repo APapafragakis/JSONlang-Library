@@ -1,7 +1,6 @@
 #include "JSONlang.h"
-#include <iostream>
 
-int main() {
+PROGRAM_BEGIN
 
     // Orismos JSON gia ena vivlio
     JSON(book) = OBJECT({
@@ -121,5 +120,4 @@ int main() {
     // Ektypwsi JSON gia to vivlio
     PRINT(book);
 
-    return 0;
-}
+PROGRAM_END

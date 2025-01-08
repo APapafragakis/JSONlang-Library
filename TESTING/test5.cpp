@@ -1,7 +1,6 @@
 #include "JSONlang.h"
-#include <iostream>
 
-int main() {
+PROGRAM_BEGIN
     // Orismos aparaititon JSON antikeimenon
     JSON(book) = OBJECT({
         {KEY(title), STRING("Gone Girl")},
@@ -55,5 +54,4 @@ int main() {
     // Ektypwsi pollaplon ekfraseon
     PRINT(STRING("Book has key author? "), HAS_KEY(book, "author")); // ektypwnei: Book has key author? true
 
-    return 0;
-}
+PROGRAM_END

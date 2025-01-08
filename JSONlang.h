@@ -373,12 +373,16 @@ public:
 #define KEY(k) #k
 #define OBJECT_INIT(key, value) {key, value}
 #define NULL_VALUE nullptr
+#define PROGRAM_BEGIN int main() {
+#define PROGRAM_END return 0; }
+
 
 // Prosthiki neas macros konta stis alles diloseis macros
 #define SIZE_OF(json_var) ((json_var)->size())
 #define IS_EMPTY(json_var) ((json_var)->isEmpty())
 #define HAS_KEY(json_var, key) ((json_var)->hasKey(key))
 #define TYPE_OF(json_var) ((json_var)->typeOf())
+
 
 inline std::shared_ptr<JsonValue> operator+(const std::shared_ptr<JsonValue>& lhs, const std::shared_ptr<JsonValue>& rhs) {
     return (*lhs) + (*rhs);

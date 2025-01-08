@@ -1,5 +1,5 @@
 #include "JSONlang.h"
 
-int main() {
-    return 0;
-}
+PROGRAM_BEGIN
+ 
+PROGRAM_END

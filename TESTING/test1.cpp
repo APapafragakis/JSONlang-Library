@@ -1,7 +1,6 @@
 #include "JSONlang.h"
-#include <iostream>
 
-int main() {
+PROGRAM_BEGIN
     // Keno antikeimeno
     JSON(emptyObj) = OBJECT({});
 
@@ -78,5 +77,4 @@ int main() {
     PRINT(week_temperatures);
     PRINT(students);
 
-    return 0; 
-}
+PROGRAM_END
