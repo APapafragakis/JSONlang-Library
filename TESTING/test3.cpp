@@ -14,6 +14,26 @@ PROGRAM_BEGIN
         })}
     });
 
+    
+    JSON(sum) = NUMBER(11) + NUMBER(5);
+    JSON(diff) = NUMBER(10) - NUMBER(5);
+    JSON(prod) = NUMBER(10) * NUMBER(5);
+    JSON(quotient) = NUMBER(10) / NUMBER(5);
+    JSON(mod) = *NUMBER(10) % *NUMBER(3);
+
+    std::cout << "Arithmetic operations:\n";
+    std::cout << "10 + 5 = ";
+    PRINT(sum);
+    std::cout << "10 - 5 = ";
+    PRINT(diff);
+    std::cout << "10 * 5 = ";
+    PRINT(prod);
+    std::cout << "10 / 5 = ";
+    PRINT(quotient);
+    std::cout << "10 % 3 = ";
+    PRINT(mod);
+    std::cout << std::endl;
+
     // Orismos JSON gia thermokrasies ebdomadas
     JSON(week_temperatures) = ARRAY({
         NUMBER(20), NUMBER(19.5), NUMBER(19), NUMBER(20),
