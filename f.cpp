@@ -1,4 +1,4 @@
-/** #include "JSONlang.h"
+ #include "JSONlang.h"
 
 int main() {
 // Define emptyObj json with empty object
@@ -189,4 +189,3 @@ int main() {
     return 0;
 }
 
-**/

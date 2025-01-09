@@ -43,6 +43,17 @@ PROGRAM_BEGIN
         PRINT(students);
         PRINT(book);
 
+        // --- APPEND ---
+        try {
+            std::cout << "Appending to week_temperatures" << std::endl;
+            SET(week_temperatures).APPEND(NUMBER(23), NUMBER(22), NUMBER(20)); // appends values to week_temperatures
+            std::cout << "Appending to students[0][\"grades\"]" << std::endl;
+            std::cout << "Type of students[0][\"grades\"]: " << TYPE_OF(ACCESS(students)[0]["grades"]) << std::endl;
+            SET(students)[0]["grades"].APPEND(OBJECT({KEY(hy255), NUMBER(9)})); // appends a grade for course hy255
+        } catch (const std::runtime_error& e) {
+            std::cerr << "Exception: " << e.what() << std::endl;
+        }
+
         // --- ERASE ---
         std::cout << "Testing ERASE..." << std::endl;
         // Diagrafi tou pediou "type" apo to vivlio
@@ -55,6 +66,7 @@ PROGRAM_BEGIN
         PRINT(week_temperatures);
         PRINT(students);
         PRINT(book);
+
 
     } catch (const std::runtime_error& e) {
         std::cerr << "Exception: " << e.what() << std::endl;

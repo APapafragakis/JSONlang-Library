@@ -1,19 +1,6 @@
 #include "JSONlang.h"
 
 PROGRAM_BEGIN
-
-    // Orismos JSON gia ena vivlio
-    JSON(book) = OBJECT({
-        {KEY(title), STRING("Gone Girl")},
-        {KEY(published), NUMBER(2012)},
-        {KEY(type), STRING("Thriller")},
-        {KEY(author), OBJECT({
-            {KEY(first_name), STRING("GILLIAN")},
-            {KEY(surname), STRING("FLYNN")},
-            {KEY(age), NUMBER(45)}
-        })}
-    });
-
     
     JSON(sum) = NUMBER(11) + NUMBER(5);
     JSON(diff) = NUMBER(10) - NUMBER(5);
@@ -136,8 +123,5 @@ PROGRAM_BEGIN
 
     std::cout << "Student with calculated grade: ";
     PRINT(student_with_grade);
-
-    // Ektypwsi JSON gia to vivlio
-    PRINT(book);
 
 PROGRAM_END
