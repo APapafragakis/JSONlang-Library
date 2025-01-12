@@ -2,32 +2,33 @@
 
 PROGRAM_BEGIN
     
-    JSON(sum) = NUMBER(11) + NUMBER(5);
+    // Arithmetic operations
+    JSON(sum1) = NUMBER(11) + NUMBER(5);
     JSON(diff) = NUMBER(10) - NUMBER(5);
     JSON(prod) = NUMBER(10) * NUMBER(5);
-    JSON(quotient) = NUMBER(10) / NUMBER(5);
+    JSON(quot1) = NUMBER(10) / NUMBER(5);
     JSON(mod) = *NUMBER(10) % *NUMBER(3);
 
     std::cout << "Arithmetic operations:\n";
     std::cout << "10 + 5 = ";
-    PRINT(sum);
+    PRINT(sum1);
     std::cout << "10 - 5 = ";
     PRINT(diff);
     std::cout << "10 * 5 = ";
     PRINT(prod);
     std::cout << "10 / 5 = ";
-    PRINT(quotient);
+    PRINT(quot1);
     std::cout << "10 % 3 = ";
     PRINT(mod);
     std::cout << std::endl;
 
-    // Orismos JSON gia thermokrasies ebdomadas
+    // JSON for weekly temperatures
     JSON(week_temperatures) = ARRAY({
         NUMBER(20), NUMBER(19.5), NUMBER(19), NUMBER(20),
         NUMBER(19), NUMBER(18.5), NUMBER(19)
     });
 
-    // Orismos JSON gia fitites kai bathmous
+    // JSON for students and grades
     JSON(students) = ARRAY({
         OBJECT({
             {KEY(name), STRING("Nikos Nikolaou")},
@@ -39,40 +40,40 @@ PROGRAM_BEGIN
         })
     });
 
-    // Orismos JSON gia to hy352 me eksetasi kai project
+    // JSON for HY352 with exam and project grades
     JSON(hy352_nik) = OBJECT({
         {KEY(examination), NUMBER(7)},
         {KEY(project), NUMBER(8)}
     });
 
-    // Dokimi sunenosis string
+    // String concatenation
     JSON(fullName) = STRING("Nikos") + STRING(" Nikolaou");
     std::cout << "Concatenated string: ";
     PRINT(fullName);
 
-    // Dokimi sunenosis pinaka
+    // Array concatenation
     JSON(array1) = ARRAY({NUMBER(1), NUMBER(2)});
     JSON(array2) = ARRAY({NUMBER(3), NUMBER(4)});
     JSON(combinedArray) = array1 + array2;
     std::cout << "Concatenated array: ";
     PRINT(combinedArray);
 
-    // Dokimi arithmitikon praxewn (+, -, *, /)
+    // Arithmetic operations with new variables
     JSON(num1) = NUMBER(15);
     JSON(num2) = NUMBER(4);
 
-    JSON(sum) = num1 + num2;
+    JSON(sum2) = num1 + num2;  // New variable for sum
     JSON(difference) = num1 - num2;
     JSON(product) = num1 * num2;
-    JSON(quotient) = num1 / num2;
+    JSON(quot2) = num1 / num2;  // New variable for quotient
 
     std::cout << "Arithmetic Operations:" << std::endl;
-    PRINT(sum);
+    PRINT(sum2);
     PRINT(difference);
     PRINT(product);
-    PRINT(quotient);
+    PRINT(quot2);
 
-    // Logikes praxeis (&&, ||)
+    // Logical operations
     JSON(bool1) = BOOLEAN(true);
     JSON(bool2) = BOOLEAN(false);
     JSON(andResult) = bool1 && bool2;
@@ -82,7 +83,7 @@ PROGRAM_BEGIN
     PRINT(andResult); 
     PRINT(orResult);  
 
-    // Sugkriseis (> < >= <=)
+    // Comparisons
     if (*num1 > *num2) {
         std::cout << "15 is greater than 4" << std::endl;
     }
@@ -96,7 +97,7 @@ PROGRAM_BEGIN
         std::cout << "4 is less than or equal to 15" << std::endl;
     }
 
-    // Ypologismos telikou bathmou gia to hy352
+    // Final grade calculation for HY352
     auto obj = std::dynamic_pointer_cast<JsonObject>(hy352_nik);
     JSON(final_grade) = 
         std::dynamic_pointer_cast<JsonNumber>(obj->get("examination")) * NUMBER(0.75) + 
@@ -105,7 +106,7 @@ PROGRAM_BEGIN
     std::cout << "Final grade: ";
     PRINT(final_grade);
 
-    // Prosthiki fititi me ypologismeno bathmo
+    // Add student with calculated grade
     JSON(student_with_grade) = ARRAY({
         OBJECT({
             {KEY(name), STRING("Nikos") + STRING(" Nikolaou")},
