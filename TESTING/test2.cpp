@@ -3,9 +3,9 @@
 
 int main() {
     
-// Define emptyObj json with empty object
+// Orismos keno antikeimeno json me keno antikeimeno
     JSON(emptyObj) = OBJECT({});
-// Define book json with an object containing data for a book
+// Orismos vivliou json me ena antikeimeno pou periexei dedomena gia ena vivlio
     JSON(book) = OBJECT({
         {KEY(title), STRING("Gone Girl")},
         {KEY(published), NUMBER(2012)},
@@ -17,13 +17,13 @@ int main() {
         })}
     });
 
-// Define week_temperatures json with an array of numbers
+// Orismos week_temperatures json me ena pinaka apo arithmous
     JSON(week_temperatures) = ARRAY({
         NUMBER(20), NUMBER(19.5), NUMBER(19), NUMBER(20),
         NUMBER(19), NUMBER(18.5), NUMBER(19)
     });
 
-// Define students json with an array of objects representing students
+// Orismos students json me ena pinaka apo antikeimena pou antiprosopeuoun mathites
     JSON(students) = ARRAY({
         OBJECT({
             {KEY(name), STRING("Nikos Nikolaou")},
@@ -35,22 +35,22 @@ int main() {
         })
     });
 
-// Change 3rd day temperature from 19 to 22
+// Allagi thermokrasias 3is meras apo 19 se 22
     SET(week_temperatures)[2] ASSIGN NUMBER(22);
 
-// Add email address for 1st student
+// Prosthesi dieuthynsis email gia ton 1o mathiti
     SET(students)[0]["e-mail"] ASSIGN STRING("csd444@csd.uoc.gr");
 
-// Assign new object in emptyObj json
+// Anathesi neou antikeimenou sto emptyObj json
     SET(emptyObj) ASSIGN OBJECT({ std::make_pair(std::string("a"), STRING("alpha")) });
     
-    // Test APPEND functionality
+    // Dokimi leitourgikotitas APPEND
     try {
         std::cout << "Appending to week_temperatures" << std::endl;
-        SET(week_temperatures).APPEND(NUMBER(23), NUMBER(22), NUMBER(200)); // appends values to week_temperatures
+        SET(week_temperatures).APPEND(NUMBER(23), NUMBER(22), NUMBER(200)); // prosthetei times sto week_temperatures
         std::cout << "Appending to students[0][\"grades\"]" << std::endl;
         std::cout << "Type of students[0][\"grades\"]: " << TYPE_OF(ACCESS(students)[0]["grades"]) << std::endl;
-        SET(students)[0]["grades"].APPEND(OBJECT({KEY(hy255), NUMBER(99)})); // appends a grade for course hy255
+        SET(students)[0]["grades"].APPEND(OBJECT({KEY(hy255), NUMBER(99)})); // prosthetei vathmo gia to mathima hy255
     } catch (const std::runtime_error& e) {
         std::cerr << "Exception: " << e.what() << std::endl;
     }
@@ -61,11 +61,11 @@ int main() {
     std::cout << "Students after appending grade: ";
     PRINT(students);
 
-    // Test ERASE functionality
+    // Dokimi leitourgikotitas ERASE
     try {
-        ERASE(ACCESS(book)["author"]["age"]); // removes age from author object of book
-        ERASE(ACCESS(book)["type"]);          // removes type of book
-        ERASE(book);                          // removes all book data, now book is an empty object
+        ERASE(ACCESS(book)["author"]["age"]); // afairei tin ilikia apo to antikeimeno author tou vivliou
+        ERASE(ACCESS(book)["type"]);          // afairei to eidos tou vivliou
+        ERASE(book);                          // afairei ola ta dedomena tou vivliou, tora to vivlio einai keno antikeimeno
     } catch (const std::runtime_error& e) {
         std::cerr << "Exception: " << e.what() << std::endl;
     }
